@@ -111,3 +111,37 @@ section > h2 {
 body > footer {
     padding-block: var(--space-xl);
 }
+
+/* SUB-TASK T-02C: Theme */
+
+body.dark-theme {
+    --bg-primary: #0f172a;
+    --bg-secondary: #1e293b;
+
+    --text-primary: #f8fafc;
+    --text-secondary: #cbd5e1;
+
+    --accent: #38bdf8;
+    --border-color: #475569;
+
+    --card-bg: #1e293b;
+}
+
+#theme-btn {
+    margin-top: var(--space-md);
+    padding: var(--space-sm) var(--space-md);
+
+    color: var(--text-primary);
+    background: var(--bg-secondary);
+
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+
+    cursor: pointer;
+}
+
+#theme-btn:focus-visible,
+a:focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 3px;
+}
