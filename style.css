@@ -51,3 +51,63 @@ input,
 textarea {
     font: inherit;
 }
+/* SUB-TASK T-02B: Responsive Grid Layout */
+
+body > header,
+body > nav,
+main,
+body > footer {
+    width: min(100% - 2rem, 1100px);
+    margin-inline: auto;
+}
+
+body > header {
+    padding-block: var(--space-xl);
+}
+
+body > nav {
+    padding-block: var(--space-md);
+}
+
+nav ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-md);
+
+    list-style: none;
+}
+
+main {
+    padding-block: var(--space-xl);
+}
+
+section {
+    margin-bottom: var(--space-xl);
+}
+
+section > h2 {
+    margin-bottom: var(--space-md);
+}
+
+.project-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+    gap: var(--space-lg);
+}
+
+.project-card {
+    background: var(--card-bg);
+
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+
+    padding: var(--space-lg);
+}
+
+.project-card h3 {
+    margin-bottom: var(--space-sm);
+}
+
+body > footer {
+    padding-block: var(--space-xl);
+}
