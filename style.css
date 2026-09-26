@@ -145,3 +145,53 @@ a:focus-visible {
     outline: 3px solid var(--accent);
     outline-offset: 3px;
 }
+/* =========================================
+   SUB-TASK T-03A: Loading Skeleton
+   ========================================= */
+
+.activity-component {
+    margin-top: var(--space-md);
+}
+
+.component-state {
+    padding: var(--space-lg);
+
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+}
+
+.skeleton-list {
+    display: grid;
+    gap: var(--space-md);
+
+    margin-top: var(--space-md);
+    list-style: none;
+}
+
+.skeleton-item {
+    height: 48px;
+
+    background: linear-gradient(
+        90deg,
+        var(--bg-secondary) 25%,
+        var(--border-color) 50%,
+        var(--bg-secondary) 75%
+    );
+
+    background-size: 200% 100%;
+
+    border-radius: var(--radius);
+
+    animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+}
