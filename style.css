@@ -293,3 +293,37 @@ a:focus-visible {
 .activity-card h3 {
     margin-bottom: var(--space-sm);
 }
+/* SUB-TASK T-03C: Empty & Error States */
+
+#empty-state,
+#error-state {
+    text-align: center;
+}
+
+#empty-state h3,
+#error-state h3 {
+    margin-bottom: var(--space-sm);
+}
+
+#error-state button {
+    margin-top: var(--space-md);
+
+    padding: var(--space-sm) var(--space-md);
+
+    color: var(--text-primary);
+    background: var(--bg-secondary);
+
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+
+    cursor: pointer;
+}
+
+#error-state button:hover {
+    background: var(--card-bg);
+}
+
+#error-state button:focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 3px;
+}

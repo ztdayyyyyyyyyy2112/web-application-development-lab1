@@ -127,7 +127,39 @@
             id="live-state"
             class="component-state"
             aria-label="Recent activity data"
-        >
+            
+        ><!-- T-03C: Empty State -->
+<section
+    id="empty-state"
+    class="component-state"
+    aria-label="No activity"
+    hidden
+>
+    <h3>No Activities</h3>
+
+    <p>
+        There are currently no activities to display.
+    </p>
+</section>
+
+
+<!-- T-03C: Error State -->
+<section
+    id="error-state"
+    class="component-state"
+    role="alert"
+    hidden
+>
+    <h3>Unable to Load Activities</h3>
+
+    <p>
+        Something went wrong while loading the data.
+    </p>
+
+    <button type="button" id="retry-btn">
+        Retry
+    </button>
+</section>
             <header class="activity-header">
                 <h3>Latest Projects</h3>
 
