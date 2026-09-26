@@ -79,3 +79,49 @@ Implement an accessible light/dark theme switcher.
 - The localStorage key must be `theme`.
 - Use Vanilla JavaScript ES6+ only.
 - No inline JavaScript event handlers.
+
+---
+
+## T-03: Resilient Component Architecture
+
+### Objective
+Build a resilient data component that can represent multiple UI states.
+
+### State Machine
+
+Loading -> Live Data
+Loading -> Empty
+Loading -> Error
+Error -> Loading (Retry)
+
+### T-03A: Loading State
+
+#### Objective
+Create a loading skeleton while data is being fetched.
+
+#### Contract
+- Use pure CSS for the loading skeleton.
+- Use a shimmer animation.
+- Do not use JavaScript for the visual animation.
+
+### T-03B: Live Data State
+
+#### Objective
+Display successfully loaded data.
+
+#### Contract
+- Use semantic HTML elements.
+- Use CSS Grid for the item list.
+- Use Flexbox for metadata badges.
+- The component must remain responsive.
+
+### T-03C: Empty & Error States
+
+#### Objective
+Handle cases where data is unavailable.
+
+#### Contract
+- Display an accessible empty state.
+- Display an accessible error message.
+- Provide a Retry button for the error state.
+- Retry must be keyboard accessible.
