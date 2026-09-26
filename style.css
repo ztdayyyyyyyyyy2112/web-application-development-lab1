@@ -250,3 +250,46 @@ a:focus-visible {
 .activity-card h3 {
     margin-bottom: var(--space-sm);
 }
+/* SUB-TASK T-03B: Live Data State */
+
+.activity-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-md);
+    margin-bottom: var(--space-lg);
+}
+
+.metadata-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+    list-style: none;
+}
+
+.metadata-badge {
+    padding: var(--space-sm) var(--space-md);
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+}
+
+.activity-grid {
+    display: grid;
+    grid-template-columns:
+        repeat(auto-fit, minmax(min(220px, 100%), 1fr));
+    gap: var(--space-md);
+    list-style: none;
+}
+
+.activity-card {
+    height: 100%;
+    padding: var(--space-md);
+    background: var(--bg-secondary);
+    border-radius: var(--radius);
+}
+
+.activity-card h3 {
+    margin-bottom: var(--space-sm);
+}
