@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Resilient Event Landing Page</title>
+
+    <link rel="stylesheet" href="landing.css">
+</head>
+
+<body>
+
+    <header>
+        <h1>Web Engineering Event 2027</h1>
+
+        <p>
+            Join our upcoming web engineering event.
+        </p>
+    </header>
+
+    <main>
+
+        <section
+            id="countdown-section"
+            aria-labelledby="countdown-heading"
+        >
+            <h2 id="countdown-heading">
+                Event Countdown
+            </h2>
+
+            <p
+                id="countdown"
+                data-deadline="2026-12-31T17:00:00Z"
+                aria-live="polite"
+            >
+                Loading countdown...
+            </p>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Ha Nguyen Viet Thanh</p>
+    </footer>
+
+    <script src="countdown.js"></script>
+
+</body>
+
+</html>
