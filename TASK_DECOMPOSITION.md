@@ -125,3 +125,105 @@ Handle cases where data is unavailable.
 - Display an accessible error message.
 - Provide a Retry button for the error state.
 - Retry must be keyboard accessible.
+
+---
+
+# HW3: Resilient Landing Page
+
+## Objective
+
+Build a resilient landing page using a drift-free countdown engine,
+a state-machine form, and secure form submission practices.
+
+---
+
+## HW3-S1: Drift-Free Countdown Engine
+
+### Objective
+
+Implement a countdown timer based on an absolute UTC ISO 8601 timestamp.
+
+### Contract
+
+- Deadline must use UTC ISO 8601 format.
+- Countdown must calculate remaining time from the absolute deadline.
+- Do not decrement a local counter every second.
+- Timer must tolerate scheduling delays without accumulating drift.
+- Expired countdown must stop cleanly.
+- DOM updates must use safe text APIs.
+
+### Verification
+
+- Verify countdown displays days, hours, minutes, and seconds.
+- Delay browser execution and confirm timer corrects itself.
+- Reload the page and confirm countdown remains accurate.
+- Verify expired deadline displays zero values.
+
+---
+
+## HW3-S2: State-Machine Form
+
+### Objective
+
+Implement the form using explicit UI states.
+
+### States
+
+Idle
+    ↓
+Submitting
+    ├── Success
+    └── Error
+
+### Contract
+
+- Initial state is Idle.
+- Submission enters Submitting.
+- Success and Error must be explicit states.
+- UI must reflect the current state.
+- Form logic must not depend on multiple unrelated boolean flags.
+
+### Verification
+
+- Test Idle -> Submitting.
+- Test Submitting -> Success.
+- Test Submitting -> Error.
+
+---
+
+## HW3-S3: Secure Submission
+
+### Objective
+
+Prevent duplicate submissions and safely process user input.
+
+### Contract
+
+- Prevent double submission.
+- Disable submit controls while submitting.
+- Do not render user input with unsafe innerHTML.
+- Use textContent for user-controlled output.
+- Sanitize/normalize input before processing.
+- Zero XSS vulnerabilities.
+
+### Verification
+
+- Double-click Submit and confirm only one submission occurs.
+- Test HTML/script-like user input.
+- Confirm content is displayed as text, never executed.
+
+---
+
+## AI Failure Audit
+
+### Required File
+
+`AI_FAILURE_AUDIT.md`
+
+### Required Defects
+
+Document three AI-induced defects including:
+
+1. Defect description.
+2. Diagnostic method.
+3. Refactored and verified solution.
