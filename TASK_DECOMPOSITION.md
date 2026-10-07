@@ -125,3 +125,112 @@ Handle cases where data is unavailable.
 - Display an accessible error message.
 - Provide a Retry button for the error state.
 - Retry must be keyboard accessible.
+
+---
+
+# HW2: Drum Kit Engine
+
+## Objective
+
+Build a contract-first, architecturally decoupled drum kit using
+semantic HTML, local audio assets, and Vanilla JavaScript ES6+.
+
+---
+
+## HW2-S1: HTML Audio Contract
+
+### Objective
+
+Define the drum pad interface and audio mapping in HTML before
+implementing JavaScript behavior.
+
+### Contract
+
+- Every drum pad uses a `data-key` attribute.
+- Every drum pad uses a `data-sound` attribute.
+- Sound file paths are stored in HTML, not JavaScript.
+- Drum pads use accessible `<button>` elements.
+- Every pad has a visible label.
+- JavaScript must not contain hardcoded sound-path mappings.
+
+### Example Contract
+
+`data-key="a"`
+`data-sound="assets/sounds/kick.wav"`
+
+### Verification
+
+- Inspect every drum pad in DevTools.
+- Verify every pad contains `data-key`.
+- Verify every pad contains `data-sound`.
+- Verify no JavaScript implementation exists before this milestone
+  is committed.
+
+---
+
+## HW2-S2: Polyphonic Audio Playback Engine
+
+### Objective
+
+Implement an audio playback engine independently from keyboard input.
+
+### Contract
+
+- Read sound paths from the HTML `data-sound` contract.
+- Do not use a large switch-case statement.
+- Multiple sounds must be able to overlap.
+- Audio engine must not depend on keyboard event handling.
+
+### Verification
+
+- Trigger individual pads independently.
+- Trigger multiple sounds rapidly.
+- Verify sounds may overlap.
+
+---
+
+## HW2-S3: Keyboard Controller
+
+### Objective
+
+Connect keyboard input to the existing audio engine.
+
+### Contract
+
+- Listen using the W3C `keydown` event.
+- Inspect `event.key`.
+- Do not use `keypress`.
+- Do not use `keyCode`.
+- Ignore repeated keydown events using `event.repeat`.
+- Key bindings must remain defined by HTML contracts.
+
+### Verification
+
+- Press each configured keyboard key.
+- Hold a key and confirm audio is not flooded.
+- Change one `data-key` value and verify minimal refactoring.
+
+---
+
+## HW2-S4: FIFO Beat Recorder
+
+### Objective
+
+Record played drum events as a timestamped FIFO queue.
+
+### Contract
+
+- Preserve chronological event order.
+- Record timestamps relative to recording start.
+- Each event stores the triggered pad/key.
+- Recording logic must remain separate from the audio engine.
+- Recorded events must be replayable in the original order.
+
+### Verification
+
+- Start recording.
+- Trigger several drum pads.
+- Stop recording.
+- Inspect the event queue.
+- Verify timestamps increase monotonically.
+- Replay the sequence and confirm FIFO order.
