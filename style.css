@@ -140,8 +140,11 @@ body.dark-theme {
     cursor: pointer;
 }
 
-#theme-btn:focus-visible,
-a:focus-visible {
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
     outline: 3px solid var(--accent);
     outline-offset: 3px;
 }
@@ -326,4 +329,26 @@ a:focus-visible {
 #error-state button:focus-visible {
     outline: 3px solid var(--accent);
     outline-offset: 3px;
+}
+
+/* =========================================
+   HW1 M1: WCAG 2.2 AA Audit
+   ========================================= */
+
+.skip-link {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+
+    padding: var(--space-sm) var(--space-md);
+
+    background: var(--text-primary);
+    color: var(--bg-primary);
+
+    transform: translateY(-150%);
+}
+
+.skip-link:focus {
+    transform: translateY(0);
 }

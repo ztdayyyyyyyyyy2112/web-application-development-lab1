@@ -125,3 +125,120 @@ Handle cases where data is unavailable.
 - Display an accessible error message.
 - Provide a Retry button for the error state.
 - Retry must be keyboard accessible.
+
+---
+
+# HW1: Production Portfolio
+
+## Objective
+
+Upgrade the existing developer portfolio into a production-ready
+portfolio with verified accessibility, keyboard navigation,
+security, and performance.
+
+---
+
+## M1: WCAG 2.2 AA Audit
+
+### Objective
+
+Audit and improve the portfolio according to WCAG 2.2 AA
+accessibility requirements.
+
+### Contract
+
+- Preserve semantic HTML landmarks.
+- Maintain exactly one primary `<h1>`.
+- Preserve the accessible skip link.
+- Navigation must have an accessible label.
+- Normal text contrast ratio must be at least 4.5:1.
+- All interactive controls must have visible keyboard focus.
+- Light and dark themes must remain accessible.
+- Page content must remain usable without a mouse.
+
+### Verification
+
+- Inspect semantic landmarks with Chrome DevTools.
+- Verify heading hierarchy.
+- Verify skip-link behavior.
+- Test keyboard focus.
+- Verify light-theme contrast.
+- Verify dark-theme contrast.
+
+---
+
+## M2: Focus Trap Audit
+
+### Objective
+
+Ensure that keyboard users can navigate through the complete
+application without becoming trapped.
+
+### Contract
+
+- Every interactive element must be reachable using Tab.
+- Shift+Tab must navigate backward.
+- No positive `tabindex` values.
+- No component may permanently capture focus.
+- Navigation links must activate using Enter.
+- Buttons must activate using keyboard input.
+
+### Verification
+
+- Navigate the complete page using Tab.
+- Navigate backward using Shift+Tab.
+- Test the theme button.
+- Test project links.
+- Test the Retry button.
+
+---
+
+## M3: Strict Content Security Policy
+
+### Objective
+
+Apply a strict Content Security Policy and eliminate unsafe
+inline JavaScript patterns.
+
+### Contract
+
+- No inline event handlers.
+- `onclick`, `onkeydown`, `onload`, and similar handlers are prohibited.
+- Events must use `addEventListener`.
+- JavaScript must use external local files.
+- User-controlled content must never be rendered using unsafe `innerHTML`.
+- Define a Content Security Policy.
+
+### Verification
+
+- Search HTML for inline handlers.
+- Inspect DevTools Console for CSP violations.
+- Verify theme functionality.
+- Verify Recent Activity functionality.
+
+---
+
+## M4: Lighthouse 100 Audit
+
+### Objective
+
+Optimize the portfolio to satisfy the required Lighthouse audit.
+
+### Contract
+
+- Optimize assets and resource loading.
+- Prevent unexpected layout shifts.
+- Remove dead code.
+- Remove unnecessary resources.
+- Maintain responsive behavior at 375px.
+- Maintain accessibility after optimization.
+- Target Lighthouse audit score: 100.
+
+### Verification
+
+- Run Lighthouse.
+- Check Performance.
+- Check Accessibility.
+- Check Best Practices.
+- Check SEO.
+- Verify zero console errors.
