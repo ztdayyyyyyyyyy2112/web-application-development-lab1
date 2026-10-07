@@ -53,3 +53,44 @@ main {
 footer {
     padding-block: 2rem;
 }
+
+/* =========================================
+   HW3 - SLICE 2: State-Machine Form
+   ========================================= */
+
+#registration-section {
+    margin-top: 2rem;
+    padding: 2rem;
+
+    border: 1px solid currentColor;
+    border-radius: 0.5rem;
+}
+
+#registration-form {
+    display: grid;
+    gap: 1rem;
+
+    margin-top: 1rem;
+}
+
+#registration-form input {
+    width: 100%;
+
+    padding: 0.75rem;
+
+    font: inherit;
+}
+
+#registration-form button {
+    width: fit-content;
+
+    padding: 0.75rem 1.25rem;
+
+    font: inherit;
+    cursor: pointer;
+}
+
+#form-status {
+    min-height: 1.5rem;
+    font-weight: 600;
+}
