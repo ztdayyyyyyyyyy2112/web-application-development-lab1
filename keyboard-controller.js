@@ -8,5 +8,17 @@ window.addEventListener("keydown", (event) => {
         return;
     }
 
-    playSound(event.key);
+    const key = event.key.toLowerCase();
+
+    const pad = document.querySelector(
+        `.drum-pad[data-key="${key}"]`
+    );
+
+    if (!pad) {
+        return;
+    }
+
+    playSound(key);
+
+    recordBeat(key);
 });

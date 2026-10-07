@@ -94,6 +94,29 @@
                     <strong>Crash</strong>
                     <span>Key H</span>
                 </button>
+                <section aria-labelledby="recorder-heading">
+    <h2 id="recorder-heading">Beat Recorder</h2>
+
+    <p id="recording-status" aria-live="polite">
+        Recorder idle
+    </p>
+
+    <button type="button" id="record-btn">
+        Start Recording
+    </button>
+
+    <button type="button" id="stop-btn" disabled>
+        Stop Recording
+    </button>
+
+    <button type="button" id="play-recording-btn" disabled>
+        Play Recording
+    </button>
+
+    <button type="button" id="clear-recording-btn" disabled>
+        Clear Recording
+    </button>
+</section>
 
             </section>
 
@@ -105,6 +128,7 @@
         <p>&copy; 2026 Ha Nguyen Viet Thanh</p>
     </footer>
     <script src="audio-engine.js"></script>
+    <script src="beat-recorder.js"></script>
     <script src="keyboard-controller.js"></script>
 </body>
 
