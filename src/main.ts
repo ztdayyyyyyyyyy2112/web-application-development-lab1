@@ -1,60 +1,96 @@
-import './style.css'
-import heroImg from './assets/hero.png'
-import typescriptLogo from './assets/typescript.svg'
-import viteLogo from './assets/vite.svg'
-import { setupCounter } from './counter.ts'
 
-document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
-<section id="center">
-  <div class="hero">
-    <img src="${heroImg}" class="base" width="170" height="179">
-    <img src="${typescriptLogo}" class="framework" alt="TypeScript logo"/>
-    <img src="${viteLogo}" class="vite" alt="Vite logo" />
-  </div>
-  <div>
-    <h1>Get started</h1>
-    <p>Edit <code>src/main.ts</code> and save to test <code>HMR</code></p>
-  </div>
-  <button id="counter" type="button" class="counter"></button>
-</section>
+import "./style.css";
+import { products, type Product } from "./data/products";
+import type { ColumnDef, DataGridProps } from "./data-grid-contract";
 
-<div class="ticks"></div>
+const columns: ColumnDef<Product>[] = [
+  { header: "Product ID", accessorKey: "id", sortable: true },
+  { header: "Product Name", accessorKey: "name", sortable: true },
+  { header: "Category", accessorKey: "category", sortable: true },
+  { header: "Price", accessorKey: "price", sortable: true },
+  { header: "Stock", accessorKey: "stock", sortable: true },
+  { header: "Status", accessorKey: "status", sortable: true }
+];
 
-<section id="next-steps">
-  <div id="docs">
-    <svg class="icon" role="presentation" aria-hidden="true"><use href="/icons.svg#documentation-icon"></use></svg>
-    <h2>Documentation</h2>
-    <p>Your questions, answered</p>
-    <ul>
-      <li>
-        <a href="https://vite.dev/" target="_blank">
-          <img class="logo" src="${viteLogo}" alt="" />
-          Explore Vite
-        </a>
-      </li>
-      <li>
-        <a href="https://www.typescriptlang.org" target="_blank">
-          <img class="button-icon" src="${typescriptLogo}" alt="">
-          Learn more
-        </a>
-      </li>
-    </ul>
-  </div>
-  <div id="social">
-    <svg class="icon" role="presentation" aria-hidden="true"><use href="/icons.svg#social-icon"></use></svg>
-    <h2>Connect with us</h2>
-    <p>Join the Vite community</p>
-    <ul>
-      <li><a href="https://github.com/vitejs/vite" target="_blank"><svg class="button-icon" role="presentation" aria-hidden="true"><use href="/icons.svg#github-icon"></use></svg>GitHub</a></li>
-      <li><a href="https://chat.vite.dev/" target="_blank"><svg class="button-icon" role="presentation" aria-hidden="true"><use href="/icons.svg#discord-icon"></use></svg>Discord</a></li>
-      <li><a href="https://x.com/vite_js" target="_blank"><svg class="button-icon" role="presentation" aria-hidden="true"><use href="/icons.svg#x-icon"></use></svg>X.com</a></li>
-      <li><a href="https://bsky.app/profile/vite.dev" target="_blank"><svg class="button-icon" role="presentation" aria-hidden="true"><use href="/icons.svg#bluesky-icon"></use></svg>Bluesky</a></li>
-    </ul>
-  </div>
-</section>
+const gridConfig: DataGridProps<Product> = {
+  data: products,
+  columns,
+  ariaLabel: "Product inventory data grid"
+};
 
-<div class="ticks"></div>
-<section id="spacer"></section>
-`
+const root = document.querySelector<HTMLElement>("#grid-root");
 
-setupCounter(document.querySelector<HTMLButtonElement>('#counter')!)
+if (!root) {
+  throw new Error("Data grid root element not found");
+}
+
+const table = document.createElement("table");
+table.className = "data-grid";
+table.setAttribute("aria-label", gridConfig.ariaLabel);
+
+const caption = document.createElement("caption");
+caption.textContent = "Product Inventory — 10 Products";
+table.appendChild(caption);
+
+const thead = document.createElement("thead");
+const headerRow = document.createElement("tr");
+
+gridConfig.columns.forEach((column) => {
+  const th = document.createElement("th");
+  th.scope = "col";
+  th.textContent = column.header;
+  headerRow.appendChild(th);
+});
+
+thead.appendChild(headerRow);
+table.appendChild(thead);
+
+const tbody = document.createElement("tbody");
+
+const currencyFormatter = new Intl.NumberFormat("vi-VN", {
+  style: "currency",
+  currency: "VND"
+});
+
+gridConfig.data.forEach((product) => {
+  const row = document.createElement("tr");
+
+  gridConfig.columns.forEach((column) => {
+    const cell = document.createElement("td");
+    const value = product[column.accessorKey];
+
+    if (column.accessorKey === "price") {
+      cell.textContent = currencyFormatter.format(product.price);
+    } else if (column.accessorKey === "status") {
+      const badge = document.createElement("span");
+      badge.className = "status-badge";
+
+      if (product.status === "Active") {
+        badge.classList.add("status-active");
+      } else if (product.status === "Low Stock") {
+        badge.classList.add("status-low");
+      } else {
+        badge.classList.add("status-out");
+      }
+
+      badge.textContent = product.status;
+      cell.appendChild(badge);
+    } else {
+      cell.textContent = String(value);
+    }
+
+    row.appendChild(cell);
+  });
+
+  tbody.appendChild(row);
+});
+
+table.appendChild(tbody);
+
+const scrollRegion = document.createElement("section");
+scrollRegion.className = "table-scroll";
+scrollRegion.setAttribute("aria-label", "Scrollable inventory table");
+scrollRegion.tabIndex = 0;
+scrollRegion.appendChild(table);
+
+root.appendChild(scrollRegion);

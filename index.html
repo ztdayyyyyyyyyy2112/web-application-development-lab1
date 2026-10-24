@@ -1,13 +1,38 @@
+
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>hw1-enterprise-data-grid</title>
+    <meta name="theme-color" content="#f8fafc" />
+    <title>Enterprise Data-Grid | Lab 2</title>
   </head>
   <body>
-    <div id="app"></div>
+    <a href="#main-content" class="skip-link">
+      Skip to main content
+    </a>
+
+    <header class="site-header">
+      <h1>Enterprise Data-Grid</h1>
+      <p>Accessible Product Inventory Management</p>
+    </header>
+
+    <main id="main-content" tabindex="-1">
+      <section class="dashboard" aria-labelledby="inventory-title">
+        <header class="dashboard-header">
+          <h2 id="inventory-title">Product Inventory</h2>
+          <p>Manage and review product information.</p>
+        </header>
+
+        <section id="grid-root" aria-label="Product data grid">
+        </section>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>Lab 2 — Web Application Development</p>
+    </footer>
+
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
