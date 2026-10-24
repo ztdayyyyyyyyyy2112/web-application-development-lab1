@@ -19,6 +19,22 @@ Build an accessible enterprise data-grid with TypeScript, sorting, filtering, pa
 - Implement ascending/descending sorting.
 - Implement text filtering.
 - Implement client-side pagination.
+### M2A - Column Sorting
+
+Objective:
+Implement ascending and descending sorting.
+
+Contract:
+- Clicking a sortable column header changes sort direction.
+- Sorting must work for strings and numbers.
+- Original product data must not be mutated.
+- Use aria-sort to communicate sorting state.
+- Sorting must be keyboard accessible.
+
+Verification:
+- Click Product Name to sort A-Z and Z-A.
+- Click Price to sort lowest-highest and highest-lowest.
+- Verify screen reader sorting semantics.
 
 ## M3 - Keyboard Navigation
 - Arrow keys navigate cells.

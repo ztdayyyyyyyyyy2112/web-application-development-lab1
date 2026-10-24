@@ -157,3 +157,26 @@ main {
     padding: 0.75rem;
   }
 }
+/* M2A - Accessible Sorting */
+
+.sort-button {
+  font: inherit;
+  font-weight: 700;
+  color: inherit;
+  background: transparent;
+  border: 0;
+  padding: 0.25rem;
+  cursor: pointer;
+  text-align: left;
+}
+
+.sort-button:hover {
+  color: var(--primary);
+  text-decoration: underline;
+}
+
+.sort-button:focus-visible {
+  outline: 3px solid var(--primary);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
