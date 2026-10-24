@@ -22,7 +22,13 @@ type SortDirection = "ascending" | "descending";
 
 let sortKey: keyof Product | null = null;
 let sortDirection: SortDirection = "ascending";
+let searchQuery = "";
 
+const searchInput =
+  document.querySelector<HTMLInputElement>("#product-search");
+
+const searchStatus =
+  document.querySelector<HTMLElement>("#search-status");
 const root = document.querySelector<HTMLElement>("#grid-root");
 
 if (!root) {
@@ -57,8 +63,28 @@ scrollRegion.tabIndex = 0;
 scrollRegion.appendChild(table);
 root.appendChild(scrollRegion);
 
+function getFilteredProducts(): Product[] {
+  const normalizedQuery = searchQuery.trim().toLowerCase();
+
+  if (normalizedQuery === "") {
+    return [...gridConfig.data];
+  }
+
+  return gridConfig.data.filter((product) => {
+    const searchableValues = [
+      product.id,
+      product.name,
+      product.category
+    ];
+
+    return searchableValues.some((value) =>
+      value.toLowerCase().includes(normalizedQuery)
+    );
+  });
+}
+
 function getSortedProducts(): Product[] {
-  const sorted = [...gridConfig.data];
+ const sorted = getFilteredProducts();
 
   if (sortKey === null) {
     return sorted;
@@ -139,7 +165,27 @@ function renderHeaders(): void {
 function renderRows(): void {
   tbody.replaceChildren();
 
-  getSortedProducts().forEach((product) => {
+  const displayedProducts = getSortedProducts();
+
+  if (searchStatus) {
+    searchStatus.textContent =
+      `${displayedProducts.length} product(s) found.`;
+  }
+
+  if (displayedProducts.length === 0) {
+    const row = document.createElement("tr");
+    const cell = document.createElement("td");
+
+    cell.colSpan = gridConfig.columns.length;
+    cell.className = "empty-message";
+    cell.textContent = "No matching products found.";
+
+    row.appendChild(cell);
+    tbody.appendChild(row);
+    return;
+  }
+
+  displayedProducts.forEach((product) => {
     const row = document.createElement("tr");
 
     gridConfig.columns.forEach((column) => {
@@ -177,5 +223,8 @@ function renderGrid(): void {
   renderHeaders();
   renderRows();
 }
-
+searchInput?.addEventListener("input", () => {
+  searchQuery = searchInput.value;
+  renderRows();
+});
 renderGrid();

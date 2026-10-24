@@ -24,8 +24,24 @@
           <p>Manage and review product information.</p>
         </header>
 
-        <section id="grid-root" aria-label="Product data grid">
-        </section>
+        <section class="grid-toolbar" aria-label="Product filters">
+  <label for="product-search">Search Products</label>
+
+  <input
+    type="search"
+    id="product-search"
+    name="product-search"
+    placeholder="Search by ID, name or category..."
+    autocomplete="off"
+  />
+
+  <p id="search-status" role="status" aria-live="polite">
+    Showing all products.
+  </p>
+</section>
+
+<section id="grid-root" aria-label="Product data grid">
+</section>
       </section>
     </main>
 

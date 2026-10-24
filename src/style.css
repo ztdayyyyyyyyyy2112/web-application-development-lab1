@@ -180,3 +180,46 @@ main {
   outline-offset: 3px;
   border-radius: 4px;
 }
+
+/* M2B - Product Filtering */
+
+.grid-toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.grid-toolbar label {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+#product-search {
+  width: 100%;
+  max-width: 420px;
+  padding: 0.75rem 1rem;
+
+  border: 1px solid var(--border);
+  border-radius: 8px;
+
+  background: var(--surface);
+  color: #0f172a;
+  font: inherit;
+}
+
+#product-search:focus-visible {
+  outline: 3px solid var(--primary);
+  outline-offset: 2px;
+}
+
+#search-status {
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+.empty-message {
+  text-align: center;
+  color: var(--muted);
+  padding: 2rem !important;
+}

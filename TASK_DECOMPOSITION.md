@@ -35,6 +35,24 @@ Verification:
 - Click Product Name to sort A-Z and Z-A.
 - Click Price to sort lowest-highest and highest-lowest.
 - Verify screen reader sorting semantics.
+### M2B - Product Filtering
+
+Objective:
+Implement client-side text filtering for product inventory.
+
+Contract:
+- Search products by ID, name, and category.
+- Search must be case-insensitive.
+- Filtering must preserve the current sorting state.
+- Do not mutate original data.
+- Display an empty message when no products match.
+- Search input must have an accessible label.
+
+Verification:
+- Search "iphone" and verify the matching product.
+- Search "electronics" and verify multiple results.
+- Search an invalid keyword and verify empty state.
+- Verify sorting still works after filtering.
 
 ## M3 - Keyboard Navigation
 - Arrow keys navigate cells.
