@@ -24,6 +24,21 @@ let sortKey: keyof Product | null = null;
 let sortDirection: SortDirection = "ascending";
 let searchQuery = "";
 
+let currentPage = 1;
+let pageSize = 5;
+
+const pageSizeSelect =
+  document.querySelector<HTMLSelectElement>("#page-size");
+
+const prevButton =
+  document.querySelector<HTMLButtonElement>("#prev-page");
+
+const nextButton =
+  document.querySelector<HTMLButtonElement>("#next-page");
+
+const pageInfo =
+  document.querySelector<HTMLElement>("#page-info");
+
 const searchInput =
   document.querySelector<HTMLInputElement>("#product-search");
 
@@ -110,6 +125,35 @@ function getSortedProducts(): Product[] {
   return sorted;
 }
 
+function getPaginatedProducts(data: Product[]): Product[] {
+  const startIndex = (currentPage - 1) * pageSize;
+  const endIndex = startIndex + pageSize;
+
+  return data.slice(startIndex, endIndex);
+}
+
+function updatePagination(totalItems: number): void {
+  const totalPages = Math.max(
+    1,
+    Math.ceil(totalItems / pageSize)
+  );
+
+  currentPage = Math.min(currentPage, totalPages);
+
+  if (pageInfo) {
+    pageInfo.textContent =
+      `Page ${currentPage} of ${totalPages}`;
+  }
+
+  if (prevButton) {
+    prevButton.disabled = currentPage === 1;
+  }
+
+  if (nextButton) {
+    nextButton.disabled = currentPage === totalPages;
+  }
+}
+
 function handleSort(key: keyof Product): void {
   if (sortKey === key) {
     sortDirection =
@@ -165,13 +209,16 @@ function renderHeaders(): void {
 function renderRows(): void {
   tbody.replaceChildren();
 
-  const displayedProducts = getSortedProducts();
+  const sortedProducts = getSortedProducts();
+
+  updatePagination(sortedProducts.length);
+
+  const displayedProducts = getPaginatedProducts(sortedProducts);
 
   if (searchStatus) {
-    searchStatus.textContent =
-      `${displayedProducts.length} product(s) found.`;
-  }
-
+  searchStatus.textContent =
+    `${sortedProducts.length} product(s) found.`;
+}
   if (displayedProducts.length === 0) {
     const row = document.createElement("tr");
     const cell = document.createElement("td");
@@ -225,6 +272,33 @@ function renderGrid(): void {
 }
 searchInput?.addEventListener("input", () => {
   searchQuery = searchInput.value;
+  currentPage = 1;
   renderRows();
 });
+
+pageSizeSelect?.addEventListener("change", () => {
+  pageSize = Number(pageSizeSelect.value);
+  currentPage = 1;
+  renderRows();
+});
+
+prevButton?.addEventListener("click", () => {
+  if (currentPage > 1) {
+    currentPage--;
+    renderRows();
+  }
+});
+
+nextButton?.addEventListener("click", () => {
+  const totalPages = Math.max(
+    1,
+    Math.ceil(getSortedProducts().length / pageSize)
+  );
+
+  if (currentPage < totalPages) {
+    currentPage++;
+    renderRows();
+  }
+});
+currentPage = 1;
 renderGrid();

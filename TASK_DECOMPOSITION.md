@@ -53,6 +53,28 @@ Verification:
 - Search "electronics" and verify multiple results.
 - Search an invalid keyword and verify empty state.
 - Verify sorting still works after filtering.
+### M2C - Client-Side Pagination
+
+Objective:
+Implement pagination for the product data grid.
+
+Contract:
+- Support 5, 10, and 20 rows per page.
+- Provide Previous and Next buttons.
+- Show current page and total pages.
+- Disable unavailable navigation buttons.
+- Reset to page 1 when filtering changes.
+- Preserve active sorting during pagination.
+- Apply data operations in order:
+  Filtering -> Sorting -> Pagination.
+
+Verification:
+- Verify 5 products per page by default.
+- Next and Previous work correctly.
+- Changing rows per page updates the grid.
+- Filtering resets pagination to page 1.
+- Sorting remains active across pages.
+- Pagination controls support keyboard navigation.
 
 ## M3 - Keyboard Navigation
 - Arrow keys navigate cells.

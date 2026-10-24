@@ -42,6 +42,32 @@
 
 <section id="grid-root" aria-label="Product data grid">
 </section>
+
+<nav class="pagination" aria-label="Product pagination">
+  <section class="pagination-size">
+    <label for="page-size">Rows per page:</label>
+
+    <select id="page-size">
+      <option value="5" selected>5</option>
+      <option value="10">10</option>
+      <option value="20">20</option>
+    </select>
+  </section>
+
+  <p id="page-info" role="status">
+    Page 1 of 2
+  </p>
+
+  <section class="pagination-actions">
+    <button id="prev-page" type="button">
+      Previous
+    </button>
+
+    <button id="next-page" type="button">
+      Next
+    </button>
+  </section>
+</nav>
       </section>
     </main>
 
