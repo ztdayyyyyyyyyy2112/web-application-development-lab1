@@ -1,13 +1,79 @@
+
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>hw2-audio-visualizer</title>
-  </head>
-  <body>
-    <div id="app"></div>
-    <script type="module" src="/src/main.ts"></script>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FIFO Audio Visualizer | Lab 2</title>
+</head>
+
+<body>
+  <a class="skip-link" href="#main-content">
+    Skip to main content
+  </a>
+
+  <header class="site-header">
+    <h1>Concurrent FIFO Audio Visualizer</h1>
+    <p>Web Audio API • Task Queue • Real-time FFT</p>
+  </header>
+
+  <main id="main-content">
+    <section class="app-panel" aria-labelledby="queue-title">
+      <h2 id="queue-title">Audio Queue Manager</h2>
+
+      <form id="audio-form" class="audio-form">
+        <label for="audio-url">Audio File URL</label>
+
+        <input
+          id="audio-url"
+          name="audio-url"
+          type="text"
+          placeholder="/audio/sample.wav"
+          required
+        />
+
+        <button type="submit" id="enqueue-btn">
+          Add to Queue
+        </button>
+      </form>
+
+      <p id="queue-status" role="status" aria-live="polite">
+        Queue is empty.
+      </p>
+
+      <section aria-labelledby="task-list-title">
+        <h3 id="task-list-title">Pending Audio Tasks</h3>
+        <ol id="audio-task-list" class="task-list"></ol>
+      </section>
+
+      <section class="visualizer-panel" aria-labelledby="visualizer-title">
+        <h3 id="visualizer-title">Frequency Visualizer</h3>
+
+        <canvas
+          id="audio-canvas"
+          width="900"
+          height="260"
+          role="img"
+          aria-label="Audio frequency spectrum visualization"
+        >
+          Audio visualization requires Canvas support.
+        </canvas>
+      </section>
+
+      <section class="playback-controls" aria-label="Playback controls">
+        <button id="play-btn" type="button" disabled>Play</button>
+        <button id="stop-btn" type="button" disabled>Stop</button>
+        <button id="cancel-all-btn" type="button" disabled>
+          Cancel All
+        </button>
+      </section>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>Lab 2 – Web Application Development</p>
+  </footer>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
 </html>

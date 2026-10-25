@@ -25,13 +25,27 @@ Canvas Visualizer
 - Define cancellation and cleanup behavior.
 - Establish performance requirements.
 
-## M1 - User Interface
 
-- Create semantic HTML interface.
-- Add track URL input.
-- Add Enqueue, Play, Stop and Cancel controls.
-- Add accessible queue status.
-- Create Canvas visualization region.
+### M1 - Semantic Audio Queue Interface
+
+Objective:
+Build a responsive and accessible interface for the audio queue.
+
+Contract:
+- Provide an audio URL input with visible label.
+- Provide Add to Queue button.
+- Display queue items using semantic list elements.
+- Provide Play, Stop, Cancel All controls.
+- Provide a Canvas visualizer region.
+- Announce queue state changes using aria-live.
+- No audio processing logic in M1.
+- No external UI frameworks.
+
+Verification:
+- Interface renders successfully.
+- All input and buttons are keyboard accessible.
+- No horizontal overflow at 375px.
+- No JavaScript console errors.
 
 ## M2 - FIFO Queue Controller
 
