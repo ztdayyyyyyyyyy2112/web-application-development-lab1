@@ -420,3 +420,24 @@ main {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* M4B - Keyboard & Focus Accessibility */
+
+.data-grid td:focus-visible {
+  outline: 3px solid var(--focus-color);
+  outline-offset: -3px;
+}
+
+.pagination button:focus-visible,
+#page-size:focus-visible,
+#product-search:focus-visible,
+.sort-button:focus-visible {
+  outline: 3px solid var(--focus-color);
+  outline-offset: 3px;
+}
+
+/* Preserve readable focus state on selected rows */
+
+.data-grid .row-selected td:focus-visible {
+  background: var(--row-selected-hover);
+}

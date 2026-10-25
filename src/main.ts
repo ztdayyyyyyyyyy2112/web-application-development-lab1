@@ -255,7 +255,25 @@ function renderRows(): void {
   const matchingIndex = displayedProducts.findIndex(
     (product) => product.id === activeProductId
   );
+  // M4B - Clamp focus position after data changes
 
+const activeProductStillVisible = displayedProducts.some(
+  (product) => product.id === activeProductId
+);
+
+if (!activeProductStillVisible) {
+  activeRowIndex = 0;
+  activeProductId = displayedProducts[0]?.id ?? null;
+} else {
+  activeRowIndex = displayedProducts.findIndex(
+    (product) => product.id === activeProductId
+  );
+}
+
+activeColumnIndex = Math.min(
+  activeColumnIndex,
+  gridConfig.columns.length - 1
+);
   if (matchingIndex !== -1) {
     activeRowIndex = matchingIndex;
   } else {
@@ -277,17 +295,22 @@ activeRowIndex = Math.min(
     `${sortedProducts.length} product(s) found.`;
 }
   if (displayedProducts.length === 0) {
-    const row = document.createElement("tr");
-    const cell = document.createElement("td");
+  const row = document.createElement("tr");
+  const cell = document.createElement("td");
 
-    cell.colSpan = gridConfig.columns.length;
-    cell.className = "empty-message";
-    cell.textContent = "No matching products found.";
+  cell.colSpan = gridConfig.columns.length;
+  cell.className = "empty-message";
+  cell.textContent = "No matching products found.";
 
-    row.appendChild(cell);
-    tbody.appendChild(row);
-    return;
-  }
+  row.appendChild(cell);
+  tbody.appendChild(row);
+
+  activeProductId = null;
+  activeRowIndex = 0;
+  activeColumnIndex = 0;
+
+  return;
+}
 
   displayedProducts.forEach((product, rowIndex) => {
     const row = document.createElement("tr");
@@ -567,13 +590,20 @@ searchInput?.addEventListener("input", () => {
 pageSizeSelect?.addEventListener("change", () => {
   pageSize = Number(pageSizeSelect.value);
   currentPage = 1;
+
   renderRows();
+
+  pageSizeSelect.focus();
 });
 
 prevButton?.addEventListener("click", () => {
   if (currentPage > 1) {
     currentPage--;
     renderRows();
+
+    if (prevButton.disabled) {
+      nextButton?.focus();
+    }
   }
 });
 
@@ -586,7 +616,13 @@ nextButton?.addEventListener("click", () => {
   if (currentPage < totalPages) {
     currentPage++;
     renderRows();
+
+    announceGrid(`Page ${currentPage} loaded.`);
+
+    if (nextButton.disabled) {
+      prevButton?.focus();
+    }
   }
 });
-currentPage = 1;
+
 renderGrid();

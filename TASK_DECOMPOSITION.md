@@ -175,11 +175,27 @@ Verification:
 - Verify selected rows are distinguishable.
 - Check layout at 375px.
 
-### M4B - Keyboard & Focus Audit
-- Verify Tab and Shift+Tab navigation.
-- Verify no keyboard traps.
-- Test focus after filtering and pagination.
-- Test Enter and Space selection.
+### M4B - Keyboard Navigation & Focus Management Audit
+
+Objective:
+Audit and improve keyboard accessibility for the Data-Grid.
+
+Contract:
+- Maintain valid roving tabindex.
+- Preserve focus after sorting and pagination.
+- Handle empty search results without focus loss.
+- Prevent keyboard traps.
+- Support Tab and Shift+Tab.
+- Support ArrowUp, ArrowDown, ArrowLeft, ArrowRight.
+- Enter and Space must preserve their selection behavior.
+- Do not reset focus unexpectedly.
+
+Verification:
+- Test sorting with keyboard.
+- Test filtering until no products remain.
+- Test pagination using Tab and Enter.
+- Test Arrow Keys at grid boundaries.
+- Verify keyboard users can exit the grid.
 
 ### M4C - Screen Reader & Lighthouse
 - Verify accessible names and roles.
