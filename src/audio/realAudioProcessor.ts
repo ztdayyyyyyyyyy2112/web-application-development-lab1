@@ -84,3 +84,18 @@ export async function realAudioProcessor(
     throw error;
   }
 }
+// M4C - Release decoder AudioContext
+
+export async function cleanupAudioDecoder(): Promise<void> {
+  const context = audioContext;
+
+  audioContext = null;
+
+  if (context && context.state !== "closed") {
+    try {
+      await context.close();
+    } catch (error) {
+      console.warn("Decoder AudioContext cleanup failed:", error);
+    }
+  }
+}

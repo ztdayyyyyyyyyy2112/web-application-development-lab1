@@ -201,6 +201,27 @@ Verification:
 - Load an invalid audio file.
 - Verify subsequent valid tasks still complete.
 - Verify cancelled tracks never appear in Ready to Play.
+### M4C - Memory Safety & Resource Cleanup
+
+Objective:
+Manage audio resources safely and prevent unbounded memory growth.
+
+Contract:
+- Limit decoded audio buffer retention.
+- Release references to unused AudioBuffers.
+- Stop and disconnect obsolete AudioBufferSourceNodes.
+- Close AudioContexts during application cleanup.
+- Prevent stale playback callbacks.
+- Cancel pending tasks before application shutdown.
+- Preserve FIFO and FFT functionality.
+
+Verification:
+- Repeated Play/Stop does not create overlapping sources.
+- Audio library remains within configured capacity.
+- Removed tracks cannot be played.
+- Application cleanup closes audio resources.
+- No uncaught errors during navigation.
+- Memory usage does not grow continuously during repeated operations.
 ## M5 - Visualizer
 
 - Render FFT frequency data using Canvas.

@@ -1,7 +1,10 @@
 import "./style.css";
 
 import { AudioTaskQueue } from "./queue/AudioTaskQueue";
-import { realAudioProcessor } from "./audio/realAudioProcessor";
+import {
+  realAudioProcessor,
+  cleanupAudioDecoder
+} from "./audio/realAudioProcessor";
 import { AudioPlaybackEngine } from "./audio/AudioPlaybackEngine";
 
 import type { AudioTask } from "./contracts/audio-contract";
@@ -46,7 +49,8 @@ interface ReadyTrack {
 }
 
 const readyTracks: ReadyTrack[] = [];
-
+// M4C - Maximum decoded tracks retained in memory
+const MAX_READY_TRACKS = 5;
 let selectedTrackId: string | null = null;
 let isPlaying = false;
 let playbackRequestId = 0;
@@ -62,6 +66,53 @@ function updatePlaybackButtons(): void {
     stopButton.disabled =
       !isPlaying && !isStartingPlayback;
   }
+}
+// M4C - AudioBuffer memory management
+
+function addReadyTrack(track: ReadyTrack): void {
+  // Avoid duplicate task IDs
+  const existingIndex = readyTracks.findIndex(
+    (item) => item.id === track.id
+  );
+
+  if (existingIndex !== -1) {
+    readyTracks.splice(existingIndex, 1);
+  }
+
+  readyTracks.push(track);
+
+  // Limit retained decoded buffers
+  while (readyTracks.length > MAX_READY_TRACKS) {
+    const removedTrack = readyTracks.shift();
+
+    if (!removedTrack) break;
+
+    console.log(
+      "Released audio buffer reference:",
+      removedTrack.url
+    );
+
+    // If removed track was selected, select another
+    if (selectedTrackId === removedTrack.id) {
+      selectedTrackId = null;
+
+      playbackRequestId++;
+      isStartingPlayback = false;
+
+      playbackEngine.stop();
+      isPlaying = false;
+    }
+  }
+
+  if (
+    selectedTrackId === null &&
+    readyTracks.length > 0
+  ) {
+    selectedTrackId = readyTracks[0].id;
+  }
+
+  renderReadyTracks();
+  updatePlaybackButtons();
 }
 // Ready Track List
 
@@ -193,18 +244,12 @@ audioForm?.addEventListener("submit", (event) => {
 
   void result.then(
     (buffer) => {
-      readyTracks.push({
-        id,
-        url,
-        buffer
-      });
-
-      if (selectedTrackId === null) {
-        selectedTrackId = id;
-      }
-
-      renderReadyTracks();
-      updatePlaybackButtons();
+      // M4C - Store decoded audio with memory limit
+addReadyTrack({
+  id,
+  url,
+  buffer
+});
 
       console.log("Audio ready:", url);
     },
@@ -327,9 +372,27 @@ cancelAllButton?.addEventListener("click", () => {
 
 // Cleanup
 
+// M4C - Application lifecycle cleanup
+
 window.addEventListener("pagehide", () => {
+  // Stop pending and active queue operations
   audioQueue.cancelAll();
+
+  // Invalidate playback UI requests
+  playbackRequestId++;
+  isStartingPlayback = false;
+  isPlaying = false;
+
+  // Release playback resources
   void playbackEngine.cleanup();
+
+  // Release decoder resources
+  void cleanupAudioDecoder();
+
+  // Remove references to decoded tracks
+  readyTracks.length = 0;
+
+  selectedTrackId = null;
 });
 
 // Initial State

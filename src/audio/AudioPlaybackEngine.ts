@@ -129,20 +129,32 @@
   }
 
   async cleanup(): Promise<void> {
-    this.stop();
+  // Invalidate pending playback requests
+  this.stop();
 
-    if (this.analyser) {
-      this.analyser.disconnect();
-      this.analyser = null;
-    }
+  // Disconnect FFT analyser
+  if (this.analyser) {
+    this.analyser.disconnect();
+    this.analyser = null;
+  }
 
-    const context = this.context;
+  // Release frequency array reference
+  this.frequencyData = null;
 
-    this.context = null;
-    this.frequencyData = null;
+  // Capture current context
+  const context = this.context;
 
-    if (context && context.state !== "closed") {
+  this.context = null;
+
+  // Close AudioContext
+  if (context && context.state !== "closed") {
+    try {
       await context.close();
+    } catch (error) {
+      console.warn("AudioContext cleanup failed:", error);
     }
   }
+
+  console.log("Audio playback resources cleaned up");
+}
 }
