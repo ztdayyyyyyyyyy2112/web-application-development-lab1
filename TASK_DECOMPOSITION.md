@@ -228,6 +228,29 @@ Verification:
 - Use requestAnimationFrame.
 - Target smooth rendering near 60 FPS.
 - Avoid unnecessary DOM updates.
+### M5A - Canvas Visualizer Engine
+
+Objective:
+Implement a reusable Canvas 2D frequency visualizer.
+
+Contract:
+- Use HTML Canvas 2D API.
+- Support 256 FFT frequency bins.
+- Render animated frequency bars.
+- Use requestAnimationFrame for animation.
+- Avoid unnecessary DOM updates.
+- Support devicePixelRatio for sharp rendering.
+- Provide start() and stop() methods.
+- Cancel animation frames during cleanup.
+- Keep rendering logic separate from playback logic.
+
+Verification:
+- Canvas is visible.
+- Frequency bars are rendered.
+- Animation runs smoothly.
+- Stop cancels animation.
+- No duplicate animation loops.
+- Canvas remains sharp on high-DPI displays.
 
 ## M6 - Verification
 
