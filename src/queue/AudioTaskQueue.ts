@@ -48,7 +48,14 @@ constructor(processor: TaskProcessor) {
     };
   }
 
+
   enqueue(trackUrl: string): Promise<AudioBuffer> {
+    return this.enqueueTracked(trackUrl).result;
+  }
+
+  enqueueTracked(
+    trackUrl: string
+  ): { id: string; result: Promise<AudioBuffer> } {
     const task: AudioTask = {
       id: crypto.randomUUID(),
       trackUrl,
@@ -58,7 +65,7 @@ constructor(processor: TaskProcessor) {
 
     const controller = new AbortController();
 
-    const promise = new Promise<AudioBuffer>((resolve, reject) => {
+    const result = new Promise<AudioBuffer>((resolve, reject) => {
       this.pending.push({
         task,
         controller,
@@ -70,8 +77,12 @@ constructor(processor: TaskProcessor) {
       void this.processNext();
     });
 
-    return promise;
+    return {
+      id: task.id,
+      result
+    };
   }
+
 
   cancel(taskId: string): void {
     const pendingIndex = this.pending.findIndex(

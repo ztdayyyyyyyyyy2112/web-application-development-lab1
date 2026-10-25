@@ -76,17 +76,30 @@ Verification:
 - Verify cancelled tasks are skipped.
 - Verify errors do not block subsequent tasks.
 
-### M2B - UI Integration
+### M2B - FIFO Queue UI Integration
 
 Objective:
-Connect the queue controller to the interface.
+Connect AudioTaskQueue to the user interface.
 
 Contract:
-- UI receives task state changes.
-- Queue rendering reflects controller state.
-- Individual Cancel uses task identifiers.
-- Cancel All clears queued and active tasks.
-- Queue logic remains outside main.ts.
+- The UI must not maintain an independent task queue.
+- Enqueue must return a usable task ID.
+- UI updates are received through subscribe().
+- Support individual cancellation.
+- Support Cancel All.
+- Show pending and active task statuses.
+- Handle rejected Promises without unhandled errors.
+- Preserve FIFO processing order.
+- Use a simulated audio processor before M3.
+
+Verification:
+- Add three audio URLs.
+- Verify tasks enter the queue in FIFO order.
+- Verify one active task at a time.
+- Cancel an individual pending task.
+- Cancel the active task.
+- Test Cancel All.
+- Verify zero uncaught JavaScript errors.
 ## M3 - Web Audio Engine
 
 - Create AudioContext.

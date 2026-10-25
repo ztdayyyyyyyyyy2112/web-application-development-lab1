@@ -1,6 +1,11 @@
 
 import "./style.css";
-import type { AudioTask } from "./contracts/audio-contract.ts";
+
+import { AudioTaskQueue } from "./queue/AudioTaskQueue";
+import { mockAudioProcessor } from "./audio/mockAudioProcessor";
+import type { AudioTask } from "./contracts/audio-contract";
+
+// M2B - Get HTML elements
 
 const audioForm =
   document.querySelector<HTMLFormElement>("#audio-form");
@@ -17,64 +22,74 @@ const queueStatus =
 const cancelAllButton =
   document.querySelector<HTMLButtonElement>("#cancel-all-btn");
 
-const tasks: AudioTask[] = [];
+// Create FIFO Queue Controller
 
-function createTask(url: string): AudioTask {
-  return {
-    id: crypto.randomUUID(),
-    trackUrl: url,
-    status: "queued",
-    createdAt: Date.now()
-  };
-}
+const audioQueue = new AudioTaskQueue(mockAudioProcessor);
 
-function renderTasks(): void {
-  if (!taskList || !queueStatus) return;
+// Create an HTML list item for each audio task
 
-  taskList.replaceChildren();
+function renderTask(task: AudioTask): HTMLLIElement {
+  const item = document.createElement("li");
+  item.className = "task-item";
+  item.dataset.taskId = task.id;
 
-  tasks.forEach((task) => {
-    const item = document.createElement("li");
-    item.className = "task-item";
+  const trackName = document.createElement("span");
+  trackName.className = "track-name";
+  trackName.textContent = task.trackUrl;
 
-    const trackName = document.createElement("span");
-    trackName.className = "track-name";
-    trackName.textContent = task.trackUrl;
+  const status = document.createElement("span");
+  status.className = "task-status";
+  status.textContent = task.status;
 
-    const status = document.createElement("span");
-    status.className = "task-status";
-    status.textContent = task.status;
+  const cancelButton = document.createElement("button");
+  cancelButton.type = "button";
+  cancelButton.textContent = "Cancel";
 
-    const cancelButton = document.createElement("button");
-    cancelButton.type = "button";
-    cancelButton.textContent = "Cancel";
-    cancelButton.setAttribute(
-      "aria-label",
-      `Cancel audio task ${task.trackUrl}`
-    );
+  cancelButton.setAttribute(
+    "aria-label",
+    `Cancel audio task ${task.trackUrl}`
+  );
 
-    cancelButton.addEventListener("click", () => {
-      const index = tasks.findIndex(
-        (item) => item.id === task.id
-      );
-
-      if (index !== -1) {
-        tasks.splice(index, 1);
-        renderTasks();
-      }
-    });
-
-    item.append(trackName, status, cancelButton);
-    taskList.appendChild(item);
+  cancelButton.addEventListener("click", () => {
+    audioQueue.cancel(task.id);
   });
 
+  item.append(trackName, status, cancelButton);
+
+  return item;
+}
+
+// Listen for changes to the FIFO Queue
+
+audioQueue.subscribe((state) => {
+  if (!taskList || !queueStatus) return;
+
+  const activeTasks = state.activeTask
+    ? [state.activeTask]
+    : [];
+
+  const visibleTasks = [
+    ...activeTasks,
+    ...state.pending
+  ];
+
+  taskList.replaceChildren(
+    ...visibleTasks.map(renderTask)
+  );
+
+  const pendingCount = state.pending.length;
+  const activeCount = state.activeTask ? 1 : 0;
+
   queueStatus.textContent =
-    `${tasks.length} audio task(s) in queue.`;
+    `${pendingCount} pending, ${activeCount} processing.`;
 
   if (cancelAllButton) {
-    cancelAllButton.disabled = tasks.length === 0;
+    cancelAllButton.disabled =
+      pendingCount + activeCount === 0;
   }
-}
+});
+
+// Add audio tasks to queue
 
 audioForm?.addEventListener("submit", (event) => {
   event.preventDefault();
@@ -85,16 +100,38 @@ audioForm?.addEventListener("submit", (event) => {
 
   if (!url) return;
 
-  tasks.push(createTask(url));
+  const { id, result } = audioQueue.enqueueTracked(url);
+
+  console.log("Task enqueued:", id);
+
+  void result.then(
+    () => {
+      console.log("Task completed:", id);
+    },
+    (error: unknown) => {
+      if (
+        error instanceof DOMException &&
+        error.name === "AbortError"
+      ) {
+        console.log("Task cancelled:", id);
+        return;
+      }
+
+      console.error("Audio task failed:", id, error);
+
+      if (queueStatus) {
+        queueStatus.textContent =
+          `Audio task failed: ${id}`;
+      }
+    }
+  );
 
   audioUrlInput.value = "";
-  renderTasks();
   audioUrlInput.focus();
 });
 
-cancelAllButton?.addEventListener("click", () => {
-  tasks.length = 0;
-  renderTasks();
-});
+// Cancel all audio tasks
 
-renderTasks();
+cancelAllButton?.addEventListener("click", () => {
+  audioQueue.cancelAll();
+});
