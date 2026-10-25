@@ -306,3 +306,28 @@ main {
 .data-grid td[tabindex="0"] {
   position: relative;
 }
+
+/* M3B - Row Selection */
+
+.data-grid tbody tr.row-selected {
+  background: #dbeafe;
+}
+
+.data-grid tbody tr.row-selected:hover {
+  background: #bfdbfe;
+}
+
+.data-grid tbody tr.row-selected td {
+  border-bottom-color: #93c5fd;
+}
+
+.selection-status {
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.data-grid td:focus-visible {
+  outline: 3px solid var(--primary);
+  outline-offset: -3px;
+}

@@ -29,6 +29,8 @@ let pageSize = 5;
 // M3A - Roving tabindex state
 let activeRowIndex = 0;
 let activeColumnIndex = 0;
+// M3B - Row Selection State
+const selectedProductIds = new Set<string>();
 
 const pageSizeSelect =
   document.querySelector<HTMLSelectElement>("#page-size");
@@ -242,6 +244,10 @@ function renderRows(): void {
     const row = document.createElement("tr");
     // M3A - Identify product rows for keyboard navigation
   row.dataset.productId = product.id;
+    const isSelected = selectedProductIds.has(product.id);
+
+  row.setAttribute("aria-selected", String(isSelected));
+  row.classList.toggle("row-selected", isSelected);
     gridConfig.columns.forEach((column, columnIndex) => {
       const cell = document.createElement("td");
 
@@ -332,6 +338,26 @@ tbody.addEventListener("keydown", (event: KeyboardEvent) => {
 
   const row = Number(target.dataset.rowIndex);
   const column = Number(target.dataset.columnIndex);
+  const productRow = target.closest<HTMLTableRowElement>(
+  "tr[data-product-id]"
+);
+
+const productId = productRow?.dataset.productId;
+
+if (productId && event.key === "Enter") {
+  event.preventDefault();
+  selectSingleRow(productId);
+  return;
+}
+
+if (productId && (event.key === " " || event.key === "Spacebar")) {
+  event.preventDefault();
+
+  if (event.repeat) return;
+
+  toggleRowSelection(productId);
+  return;
+}
 
   let nextRow = row;
   let nextColumn = column;
@@ -360,7 +386,89 @@ tbody.addEventListener("keydown", (event: KeyboardEvent) => {
   event.preventDefault();
   focusGridCell(nextRow, nextColumn);
 });
+tbody.addEventListener("click", (event: MouseEvent) => {
+  const target = event.target;
 
+  if (!(target instanceof Element)) return;
+
+  const row = target.closest<HTMLTableRowElement>(
+    "tr[data-product-id]"
+  );
+
+  if (!row) return;
+
+  const productId = row.dataset.productId;
+
+  if (!productId) return;
+
+  selectSingleRow(productId);
+
+  const clickedCell = target.closest<HTMLTableCellElement>(
+    "td[data-row-index]"
+  );
+
+  if (clickedCell) {
+    focusGridCell(
+      Number(clickedCell.dataset.rowIndex),
+      Number(clickedCell.dataset.columnIndex)
+    );
+  }
+});
+// M3B - Selection Controller
+
+const selectionStatus =
+  document.querySelector<HTMLElement>("#selection-status");
+
+function updateSelectionUI(): void {
+  const rows = tbody.querySelectorAll<HTMLTableRowElement>(
+    "tr[data-product-id]"
+  );
+
+  rows.forEach((row) => {
+    const productId = row.dataset.productId;
+
+    if (!productId) return;
+
+    const isSelected = selectedProductIds.has(productId);
+
+    row.setAttribute("aria-selected", String(isSelected));
+    row.classList.toggle("row-selected", isSelected);
+  });
+
+  if (selectionStatus) {
+    const count = selectedProductIds.size;
+
+    selectionStatus.textContent =
+      count === 0
+        ? "No products selected."
+        : `${count} product(s) selected.`;
+  }
+}
+
+function selectSingleRow(productId: string): void {
+  selectedProductIds.clear();
+  selectedProductIds.add(productId);
+
+  updateSelectionUI();
+
+  const product = gridConfig.data.find(
+    (item) => item.id === productId
+  );
+
+  if (product) {
+    gridConfig.onRowSelect?.(product);
+  }
+}
+
+function toggleRowSelection(productId: string): void {
+  if (selectedProductIds.has(productId)) {
+    selectedProductIds.delete(productId);
+  } else {
+    selectedProductIds.add(productId);
+  }
+
+  updateSelectionUI();
+}
 function renderGrid(): void {
   renderHeaders();
   renderRows();

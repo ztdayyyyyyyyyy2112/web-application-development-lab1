@@ -104,6 +104,28 @@ Verification:
 - Verify focus moves between cells.
 - Verify only one cell has tabindex="0".
 
+### M3B - Accessible Row Selection
+
+Objective:
+Implement accessible row selection with mouse and keyboard.
+
+Contract:
+- Enter selects the focused row exclusively.
+- Space toggles the focused row selection.
+- Mouse click selects a row.
+- Maintain selection by product ID.
+- Preserve selection after sorting, filtering and pagination.
+- Update aria-selected on grid rows.
+- Announce selection changes to screen readers.
+- Do not interfere with arrow-key navigation.
+
+Verification:
+- Enter selects one row.
+- Space toggles the current row.
+- Click selects a product.
+- Selection persists across sorting and pagination.
+- Focus remains usable after selecting a row.
+
 ## M4 - Accessibility
 - Follow WCAG 2.2 AA.
 - Minimum text contrast ratio 4.5:1.
