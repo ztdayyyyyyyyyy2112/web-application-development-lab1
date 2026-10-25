@@ -129,6 +129,29 @@ Verification:
 - Verify failed downloads do not block the queue.
 - Verify Cancel interrupts active fetch.
 - Verify there are no unhandled Promise rejections.
+### M3C - FFT Frequency Analyser
+
+Objective:
+Integrate Web Audio API AnalyserNode into the playback engine.
+
+Contract:
+- Use AnalyserNode for real-time audio frequency analysis.
+- Configure fftSize = 512.
+- Provide 256 frequency bins.
+- Connect AudioBufferSourceNode to AnalyserNode.
+- Connect AnalyserNode to AudioDestinationNode.
+- Expose frequency data through a public method.
+- Preserve existing Play and Stop functionality.
+- Avoid creating multiple analyser nodes unnecessarily.
+- Ensure proper audio node cleanup.
+
+Verification:
+- Audio playback still works.
+- AnalyserNode returns 256 frequency bins.
+- Frequency values remain within 0-255.
+- Frequency data changes during playback.
+- Stop terminates audio playback.
+- No JavaScript console errors.
 
 ## M4 - Cancellation & Cleanup
 

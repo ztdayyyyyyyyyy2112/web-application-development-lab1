@@ -247,6 +247,43 @@ playButton?.addEventListener("click", async () => {
     updatePlaybackButtons();
 
     console.log("Playing:", track.url);
+        // M3C - Verify FFT Analyser
+    console.log(
+      "FFT Bin Count:",
+      playbackEngine.getFrequencyBinCount()
+    );
+
+    console.log(
+      "Analyser initialized:",
+      playbackEngine.hasAnalyser()
+    );
+
+    const frequencyData = playbackEngine.getFrequencyData();
+
+    if (frequencyData) {
+      console.log(
+        "Frequency Data:",
+        Array.from(frequencyData.slice(0, 20))
+      );
+    }
+        // Temporary FFT debugging
+    let sampleCount = 0;
+
+    const fftInterval = window.setInterval(() => {
+      const data = playbackEngine.getFrequencyData();
+
+      if (!data) return;
+
+      const maxValue = Math.max(...data);
+
+      console.log("FFT Max Amplitude:", maxValue);
+
+      sampleCount++;
+
+      if (sampleCount >= 10) {
+        window.clearInterval(fftInterval);
+      }
+    }, 500);
   } catch (error) {
     isPlaying = false;
     updatePlaybackButtons();
