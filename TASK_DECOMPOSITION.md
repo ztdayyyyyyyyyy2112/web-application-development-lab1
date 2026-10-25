@@ -54,7 +54,39 @@ Verification:
 - Maintain queue state.
 - Prevent duplicate processing.
 - Isolate the queue from UI logic.
+### M2A - FIFO Queue Controller
 
+Objective:
+Implement a standalone FIFO task queue.
+
+Contract:
+- Tasks are processed in arrival order.
+- Only one task is actively processed at a time.
+- Enqueue returns a Promise<AudioBuffer>.
+- Queue processing must be independent from the UI.
+- Failed tasks must not block the queue.
+- Support cancellation of pending and active tasks.
+- Prevent duplicate processing.
+- Preserve task status information.
+
+Verification:
+- Enqueue A, B and C.
+- Verify processing order A -> B -> C.
+- Verify only one active task.
+- Verify cancelled tasks are skipped.
+- Verify errors do not block subsequent tasks.
+
+### M2B - UI Integration
+
+Objective:
+Connect the queue controller to the interface.
+
+Contract:
+- UI receives task state changes.
+- Queue rendering reflects controller state.
+- Individual Cancel uses task identifiers.
+- Cancel All clears queued and active tasks.
+- Queue logic remains outside main.ts.
 ## M3 - Web Audio Engine
 
 - Create AudioContext.
