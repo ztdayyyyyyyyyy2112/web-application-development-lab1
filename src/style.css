@@ -184,3 +184,31 @@ main {
     flex: 1;
   }
 }
+/* M3B - Ready Audio Tracks */
+
+[aria-label="Ready audio tracks"] {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+
+[aria-label="Ready audio tracks"] h3 {
+  color: var(--accent);
+  margin-bottom: 1rem;
+}
+
+[aria-label="Ready audio tracks"] .task-item button {
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+[aria-label="Ready audio tracks"] .task-item button[aria-pressed="true"] {
+  border-color: var(--accent);
+  background: #075985;
+}
+
+[aria-label="Ready audio tracks"] .task-item span {
+  color: var(--text-muted);
+}

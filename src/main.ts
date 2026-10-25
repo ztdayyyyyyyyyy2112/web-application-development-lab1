@@ -1,11 +1,12 @@
-
 import "./style.css";
 
 import { AudioTaskQueue } from "./queue/AudioTaskQueue";
 import { realAudioProcessor } from "./audio/realAudioProcessor";
+import { AudioPlaybackEngine } from "./audio/AudioPlaybackEngine";
+
 import type { AudioTask } from "./contracts/audio-contract";
 
-// M2B - Get HTML elements
+// HTML Elements
 
 const audioForm =
   document.querySelector<HTMLFormElement>("#audio-form");
@@ -22,13 +23,110 @@ const queueStatus =
 const cancelAllButton =
   document.querySelector<HTMLButtonElement>("#cancel-all-btn");
 
-// Create FIFO Queue Controller
+const playButton =
+  document.querySelector<HTMLButtonElement>("#play-btn");
+
+const stopButton =
+  document.querySelector<HTMLButtonElement>("#stop-btn");
+
+// FIFO Controller
 
 const audioQueue = new AudioTaskQueue(realAudioProcessor);
-// Create an HTML list item for each audio task
+
+// Playback Engine
+
+const playbackEngine = new AudioPlaybackEngine();
+
+// Decoded Audio Library
+
+interface ReadyTrack {
+  id: string;
+  url: string;
+  buffer: AudioBuffer;
+}
+
+const readyTracks: ReadyTrack[] = [];
+
+let selectedTrackId: string | null = null;
+let isPlaying = false;
+
+// Ready Track List
+
+const readySection = document.createElement("section");
+
+readySection.setAttribute(
+  "aria-label",
+  "Ready audio tracks"
+);
+
+const readyHeading = document.createElement("h3");
+readyHeading.textContent = "Ready to Play";
+
+const readyList = document.createElement("ul");
+readyList.className = "task-list";
+
+readySection.append(readyHeading, readyList);
+
+taskList?.parentElement?.insertAdjacentElement(
+  "afterend",
+  readySection
+);
+
+// Render Ready Tracks
+
+function renderReadyTracks(): void {
+  readyList.replaceChildren();
+
+  readyTracks.forEach((track) => {
+    const item = document.createElement("li");
+
+    item.className = "task-item";
+
+    const selectButton = document.createElement("button");
+
+    selectButton.type = "button";
+    selectButton.textContent = track.url;
+
+    selectButton.setAttribute(
+      "aria-pressed",
+      String(selectedTrackId === track.id)
+    );
+
+    selectButton.addEventListener("click", () => {
+      selectedTrackId = track.id;
+      renderReadyTracks();
+      updatePlaybackButtons();
+    });
+
+    const duration = document.createElement("span");
+
+    duration.textContent =
+      `${track.buffer.duration.toFixed(1)} seconds`;
+
+    item.append(selectButton, duration);
+
+    readyList.appendChild(item);
+  });
+}
+
+// Update Buttons
+
+function updatePlaybackButtons(): void {
+  if (playButton) {
+    playButton.disabled =
+      selectedTrackId === null;
+  }
+
+  if (stopButton) {
+    stopButton.disabled = !isPlaying;
+  }
+}
+
+// Render Queue Task
 
 function renderTask(task: AudioTask): HTMLLIElement {
   const item = document.createElement("li");
+
   item.className = "task-item";
   item.dataset.taskId = task.id;
 
@@ -41,13 +139,9 @@ function renderTask(task: AudioTask): HTMLLIElement {
   status.textContent = task.status;
 
   const cancelButton = document.createElement("button");
+
   cancelButton.type = "button";
   cancelButton.textContent = "Cancel";
-
-  cancelButton.setAttribute(
-    "aria-label",
-    `Cancel audio task ${task.trackUrl}`
-  );
 
   cancelButton.addEventListener("click", () => {
     audioQueue.cancel(task.id);
@@ -58,17 +152,13 @@ function renderTask(task: AudioTask): HTMLLIElement {
   return item;
 }
 
-// Listen for changes to the FIFO Queue
+// Queue Subscription
 
 audioQueue.subscribe((state) => {
   if (!taskList || !queueStatus) return;
 
-  const activeTasks = state.activeTask
-    ? [state.activeTask]
-    : [];
-
   const visibleTasks = [
-    ...activeTasks,
+    ...(state.activeTask ? [state.activeTask] : []),
     ...state.pending
   ];
 
@@ -76,19 +166,17 @@ audioQueue.subscribe((state) => {
     ...visibleTasks.map(renderTask)
   );
 
-  const pendingCount = state.pending.length;
-  const activeCount = state.activeTask ? 1 : 0;
-
   queueStatus.textContent =
-    `${pendingCount} pending, ${activeCount} processing.`;
+    `${state.pending.length} pending, ` +
+    `${state.activeTask ? 1 : 0} processing.`;
 
   if (cancelAllButton) {
     cancelAllButton.disabled =
-      pendingCount + activeCount === 0;
+      visibleTasks.length === 0;
   }
 });
 
-// Add audio tasks to queue
+// Add Audio URL
 
 audioForm?.addEventListener("submit", (event) => {
   event.preventDefault();
@@ -101,11 +189,22 @@ audioForm?.addEventListener("submit", (event) => {
 
   const { id, result } = audioQueue.enqueueTracked(url);
 
-  console.log("Task enqueued:", id);
-
   void result.then(
-    () => {
-      console.log("Task completed:", id);
+    (buffer) => {
+      readyTracks.push({
+        id,
+        url,
+        buffer
+      });
+
+      if (selectedTrackId === null) {
+        selectedTrackId = id;
+      }
+
+      renderReadyTracks();
+      updatePlaybackButtons();
+
+      console.log("Audio ready:", url);
     },
     (error: unknown) => {
       if (
@@ -116,11 +215,11 @@ audioForm?.addEventListener("submit", (event) => {
         return;
       }
 
-      console.error("Audio task failed:", id, error);
+      console.error("Audio task failed:", error);
 
       if (queueStatus) {
         queueStatus.textContent =
-          `Audio task failed: ${id}`;
+          `Failed to load: ${url}`;
       }
     }
   );
@@ -129,8 +228,56 @@ audioForm?.addEventListener("submit", (event) => {
   audioUrlInput.focus();
 });
 
-// Cancel all audio tasks
+// Play Selected Track
+
+playButton?.addEventListener("click", async () => {
+  const track = readyTracks.find(
+    (item) => item.id === selectedTrackId
+  );
+
+  if (!track) return;
+
+  try {
+    await playbackEngine.play(track.buffer, () => {
+      isPlaying = false;
+      updatePlaybackButtons();
+    });
+
+    isPlaying = true;
+    updatePlaybackButtons();
+
+    console.log("Playing:", track.url);
+  } catch (error) {
+    isPlaying = false;
+    updatePlaybackButtons();
+    console.error("Playback failed:", error);
+  }
+});
+
+// Stop Playback
+
+stopButton?.addEventListener("click", () => {
+  playbackEngine.stop();
+
+  isPlaying = false;
+  updatePlaybackButtons();
+
+  console.log("Playback stopped");
+});
+
+// Cancel All Queue Tasks
 
 cancelAllButton?.addEventListener("click", () => {
   audioQueue.cancelAll();
 });
+
+// Cleanup
+
+window.addEventListener("pagehide", () => {
+  audioQueue.cancelAll();
+  void playbackEngine.cleanup();
+});
+
+// Initial State
+
+updatePlaybackButtons();
