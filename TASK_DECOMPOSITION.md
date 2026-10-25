@@ -300,44 +300,29 @@ Acceptance Criteria:
 - All automated tests pass.
 - Production build succeeds.
 ```
+### M6B - Performance & Memory Verification
 
-Dán nội dung:
+Objective:
+Verify rendering performance, memory management,
+FIFO concurrency, cancellation, and resource cleanup.
 
-<CodeBlock language="typescript" editable>
-export type AudioTaskStatus =
-  | "queued"
-  | "downloading"
-  | "decoding"
-  | "ready"
-  | "playing"
-  | "completed"
-  | "cancelled"
-  | "error";
+Performance Test Plan:
+- P01: Measure Canvas rendering FPS.
+- P02: Monitor memory usage during repeated playback.
+- P03: Verify FIFO concurrency.
+- P04: Verify cancellation under network throttling.
+- P05: Verify animation and AudioContext cleanup.
 
-export interface AudioTask {
-  id: string;
-  trackUrl: string;
-  status: AudioTaskStatus;
-  createdAt: number;
-  error?: string;
-}
+Acceptance Criteria:
+- Rendering approaches 60 FPS on capable hardware.
+- No continuous memory growth across repeated cycles.
+- At most one queue processor runs at a time.
+- Cancellation does not block subsequent tasks.
+- Playback resources are released during cleanup.
 
-export interface AudioQueueState {
-  pending: AudioTask[];
-  activeTask: AudioTask | null;
-  isProcessing: boolean;
-}
-
-export interface AudioQueueController {
-  enqueue(trackUrl: string): Promise<AudioBuffer>;
-  cancel(taskId: string): void;
-  cancelAll(): void;
-}
-
-export interface AudioEngine {
-  initialize(): Promise<void>;
-  decode(data: ArrayBuffer): Promise<AudioBuffer>;
-  play(buffer: AudioBuffer): void;
-  stop(): void;
-  cleanup(): void;
-}
+Evidence:
+- Chrome DevTools Performance screenshot.
+- Chrome DevTools Memory screenshot.
+- Network cancellation screenshot.
+- Vitest test results screenshot.
+- Production build result screenshot.
