@@ -1,0 +1,6 @@
+.card { padding: 1rem; border: 1px solid #344e68; border-radius: 16px; }
+.header { display: flex; gap: 1rem; align-items: center; }
+.avatar, .avatarFallback { width: 120px; height: 120px; }
+.avatarFallback { display: grid; place-items: center; }
+.metrics { display: grid; grid-template-columns: repeat(3, 1fr); }
+.skills { list-style: none; padding: 0; }
