@@ -251,6 +251,30 @@ Verification:
 - Stop cancels animation.
 - No duplicate animation loops.
 - Canvas remains sharp on high-DPI displays.
+### M5C - Rendering Performance Optimization
+
+Objective:
+Optimize Canvas visualization for smooth and resource-efficient rendering.
+
+Contract:
+- Cap rendering at approximately 60 FPS.
+- Use requestAnimationFrame.
+- Prevent duplicate animation loops.
+- Avoid unnecessary allocations per frame.
+- Support devicePixelRatio scaling.
+- Resize canvas with ResizeObserver.
+- Pause rendering when the tab is hidden.
+- Resume rendering when the tab becomes visible.
+- Disconnect observers and cancel animation during cleanup.
+
+Verification:
+- Animation responds to audio frequency changes.
+- FPS remains near the target on capable devices.
+- No duplicate animation loops.
+- Canvas resizes correctly.
+- Canvas remains sharp on HiDPI screens.
+- Rendering pauses in background tabs.
+- Cleanup releases animation resources.
 
 ## M6 - Verification
 
