@@ -125,6 +125,28 @@ Verification:
 - Click selects a product.
 - Selection persists across sorting and pagination.
 - Focus remains usable after selecting a row.
+### M3C - ARIA Grid Semantics & Focus Management
+
+Objective:
+Implement complete accessible grid semantics.
+
+Contract:
+- Use role="grid" on the table.
+- Use role="row" on header and data rows.
+- Use role="columnheader" on column headers.
+- Use role="gridcell" on data cells.
+- Maintain valid roving tabindex.
+- Support keyboard navigation without focus loss.
+- Preserve row selection by product ID.
+- Provide accessible sorting announcements.
+- Handle filtering, sorting and pagination safely.
+
+Verification:
+- Verify ARIA roles in Chrome DevTools.
+- Ensure only one data cell has tabindex="0".
+- Test Arrow Keys, Enter and Space.
+- Test focus after sorting and pagination.
+- Verify screen reader announcements.
 
 ## M4 - Accessibility
 - Follow WCAG 2.2 AA.

@@ -29,6 +29,7 @@ let pageSize = 5;
 // M3A - Roving tabindex state
 let activeRowIndex = 0;
 let activeColumnIndex = 0;
+let activeProductId: string | null = null;
 // M3B - Row Selection State
 const selectedProductIds = new Set<string>();
 
@@ -62,7 +63,10 @@ const currencyFormatter = new Intl.NumberFormat("vi-VN", {
 
 const table = document.createElement("table");
 table.className = "data-grid";
+table.setAttribute("role", "grid");
+table.setAttribute("aria-multiselectable", "true");
 table.setAttribute("aria-label", gridConfig.ariaLabel);
+
 
 const caption = document.createElement("caption");
 caption.textContent = "Product Inventory — 10 Products";
@@ -70,6 +74,7 @@ table.appendChild(caption);
 
 const thead = document.createElement("thead");
 const headerRow = document.createElement("tr");
+headerRow.setAttribute("role", "row");
 thead.appendChild(headerRow);
 table.appendChild(thead);
 
@@ -158,8 +163,8 @@ function updatePagination(totalItems: number): void {
     nextButton.disabled = currentPage === totalPages;
   }
 }
-
 function handleSort(key: keyof Product): void {
+  // Step 1: Update sorting state
   if (sortKey === key) {
     sortDirection =
       sortDirection === "ascending" ? "descending" : "ascending";
@@ -168,12 +173,35 @@ function handleSort(key: keyof Product): void {
     sortDirection = "ascending";
   }
 
+  // Step 2: Reset pagination
+  currentPage = 1;
+
+  // Step 3: Get column name for screen reader
+  const column = gridConfig.columns.find(
+    (item) => item.accessorKey === key
+  );
+
+  // Step 4: Announce sorting changes
+  announceGrid(
+    `Sorted by ${column?.header ?? String(key)}, ${sortDirection}.`
+  );
+
+  // Step 5: Remember focus location
+  const focusWasInGrid = tbody.contains(document.activeElement);
+
+  // Step 6: Re-render data
   renderGrid();
 
-  const activeButton = headerRow.querySelector<HTMLButtonElement>(
-    `button[data-sort-key="${key}"]`
-  );
-  activeButton?.focus();
+  // Step 7: Restore focus appropriately
+  if (focusWasInGrid) {
+    focusGridCell(activeRowIndex, activeColumnIndex);
+  } else {
+    const activeButton = headerRow.querySelector<HTMLButtonElement>(
+      `button[data-sort-key="${key}"]`
+    );
+
+    activeButton?.focus();
+  }
 }
 
 function renderHeaders(): void {
@@ -182,6 +210,7 @@ function renderHeaders(): void {
   gridConfig.columns.forEach((column) => {
     const th = document.createElement("th");
     th.scope = "col";
+    th.setAttribute("role", "columnheader");
 
     if (column.sortable) {
       th.setAttribute(
@@ -212,6 +241,9 @@ function renderHeaders(): void {
 }
 
 function renderRows(): void {
+  const hadGridFocus =
+  document.activeElement instanceof HTMLTableCellElement &&
+  tbody.contains(document.activeElement);
   tbody.replaceChildren();
 
   const sortedProducts = getSortedProducts();
@@ -219,6 +251,23 @@ function renderRows(): void {
   updatePagination(sortedProducts.length);
 
   const displayedProducts = getPaginatedProducts(sortedProducts);
+  if (activeProductId !== null) {
+  const matchingIndex = displayedProducts.findIndex(
+    (product) => product.id === activeProductId
+  );
+
+  if (matchingIndex !== -1) {
+    activeRowIndex = matchingIndex;
+  } else {
+    activeRowIndex = 0;
+    activeProductId = displayedProducts[0]?.id ?? null;
+  }
+}
+
+activeRowIndex = Math.min(
+  activeRowIndex,
+  Math.max(0, displayedProducts.length - 1)
+);
   activeRowIndex = Math.min(
   activeRowIndex,
   Math.max(0, displayedProducts.length - 1)
@@ -243,6 +292,7 @@ function renderRows(): void {
   displayedProducts.forEach((product, rowIndex) => {
     const row = document.createElement("tr");
     // M3A - Identify product rows for keyboard navigation
+    row.setAttribute("role", "row");
   row.dataset.productId = product.id;
     const isSelected = selectedProductIds.has(product.id);
 
@@ -250,6 +300,7 @@ function renderRows(): void {
   row.classList.toggle("row-selected", isSelected);
     gridConfig.columns.forEach((column, columnIndex) => {
       const cell = document.createElement("td");
+      cell.setAttribute("role", "gridcell");
 
       // Keyboard navigation metadata
 cell.dataset.rowIndex = String(rowIndex);
@@ -287,6 +338,9 @@ cell.tabIndex =
 
     tbody.appendChild(row);
   });
+  if (hadGridFocus && displayedProducts.length > 0) {
+  focusGridCell(activeRowIndex, activeColumnIndex);
+}
 }
 
 
@@ -325,6 +379,11 @@ function focusGridCell(rowIndex: number, columnIndex: number): void {
   target.tabIndex = 0;
   activeRowIndex = safeRow;
   activeColumnIndex = safeColumn;
+  const productRow = target.closest<HTMLTableRowElement>(
+  "tr[data-product-id]"
+);
+
+activeProductId = productRow?.dataset.productId ?? null;
 
   target.focus();
 }
@@ -418,6 +477,15 @@ tbody.addEventListener("click", (event: MouseEvent) => {
 
 const selectionStatus =
   document.querySelector<HTMLElement>("#selection-status");
+  // M3C - Screen reader announcement element
+const gridAnnouncement =
+  document.querySelector<HTMLElement>("#grid-announcement");
+
+function announceGrid(message: string): void {
+  if (gridAnnouncement) {
+    gridAnnouncement.textContent = message;
+  }
+}
 
 function updateSelectionUI(): void {
   const rows = tbody.querySelectorAll<HTMLTableRowElement>(
@@ -446,11 +514,19 @@ function updateSelectionUI(): void {
 }
 
 function selectSingleRow(productId: string): void {
+  // Clear previous selections
   selectedProductIds.clear();
+
+  // Select only the current product
   selectedProductIds.add(productId);
 
+  // Update selected row styles and ARIA
   updateSelectionUI();
 
+  // M3C - Announce selection
+  announceGrid(`Product ${productId} selected.`);
+
+  // Execute optional callback
   const product = gridConfig.data.find(
     (item) => item.id === productId
   );
@@ -461,13 +537,22 @@ function selectSingleRow(productId: string): void {
 }
 
 function toggleRowSelection(productId: string): void {
+  // Toggle selection in Set
   if (selectedProductIds.has(productId)) {
     selectedProductIds.delete(productId);
   } else {
     selectedProductIds.add(productId);
   }
 
+  // Update visual and ARIA states
   updateSelectionUI();
+
+  // M3C - Announce new selection state
+  announceGrid(
+    selectedProductIds.has(productId)
+      ? `Product ${productId} selected.`
+      : `Product ${productId} deselected.`
+  );
 }
 function renderGrid(): void {
   renderHeaders();
