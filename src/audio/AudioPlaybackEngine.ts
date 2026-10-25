@@ -106,6 +106,7 @@
   }
 
   stop(): void {
+    
 
     // Invalidate all previous playback requests
     this.requestId++;

@@ -8,6 +8,7 @@ import {
 import { AudioPlaybackEngine } from "./audio/AudioPlaybackEngine";
 
 import type { AudioTask } from "./contracts/audio-contract";
+import { CanvasVisualizer } from "./visualizer/CanvasVisualizer";
 
 // HTML Elements
 
@@ -39,6 +40,16 @@ const audioQueue = new AudioTaskQueue(realAudioProcessor);
 // Playback Engine
 
 const playbackEngine = new AudioPlaybackEngine();
+// M5B - Initialize Canvas Visualizer
+
+const visualizerCanvas =
+  document.querySelector<HTMLCanvasElement>(
+    "#audio-visualizer"
+  );
+
+const visualizer = visualizerCanvas
+  ? new CanvasVisualizer(visualizerCanvas)
+  : null;
 
 // Decoded Audio Library
 
@@ -55,6 +66,25 @@ let selectedTrackId: string | null = null;
 let isPlaying = false;
 let playbackRequestId = 0;
 let isStartingPlayback = false;
+
+// M5B - Start real-time FFT visualization
+
+function startVisualizer(): void {
+  if (!visualizer) return;
+
+  visualizer.start(() => {
+    return playbackEngine.getFrequencyData();
+  });
+}
+
+// M5B - Stop real-time FFT visualization
+
+function stopVisualizer(): void {
+  if (!visualizer) return;
+
+  visualizer.stop();
+  visualizer.clear();
+}
 
 function updatePlaybackButtons(): void {
   if (playButton) {
@@ -321,6 +351,19 @@ updatePlaybackButtons();
 
     isPlaying = true;
     updatePlaybackButtons();
+    await playbackEngine.play(track.buffer);
+
+// Ignore stale playback requests
+if (currentRequest !== playbackRequestId) {
+  return;
+}
+
+isPlaying = true;
+
+// M5B - Start FFT animation
+startVisualizer();
+
+updatePlaybackButtons();
 
     console.log("Playing:", track.url);
 
@@ -357,6 +400,19 @@ stopButton?.addEventListener("click", () => {
   playbackRequestId++;
   isStartingPlayback = false;
   playbackEngine.stop();
+  stopButton?.addEventListener("click", () => {
+  playbackRequestId++;
+
+  playbackEngine.stop();
+
+  // M5B - Stop FFT animation
+  stopVisualizer();
+
+  isPlaying = false;
+  isStartingPlayback = false;
+
+  updatePlaybackButtons();
+});
 
   isPlaying = false;
   updatePlaybackButtons();
@@ -376,6 +432,7 @@ cancelAllButton?.addEventListener("click", () => {
 
 window.addEventListener("pagehide", () => {
   // Stop pending and active queue operations
+  visualizer?.cleanup();
   audioQueue.cancelAll();
 
   // Invalidate playback UI requests
