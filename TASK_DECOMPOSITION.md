@@ -107,6 +107,28 @@ Verification:
 - Use AudioBufferSourceNode.
 - Connect AnalyserNode.
 - Configure FFT size 256 or 512.
+### M3A - Real Audio Fetch & Decode
+
+Objective:
+Replace the mock audio processor with real audio decoding.
+
+Contract:
+- Use fetch() to download audio files.
+- Use AbortSignal to support cancellation.
+- Validate HTTP response status.
+- Decode using AudioContext.decodeAudioData().
+- Return a valid AudioBuffer.
+- Handle invalid files and network errors.
+- Preserve FIFO processing order.
+- Separate audio processing from UI.
+
+Verification:
+- Load a real MP3/WAV file.
+- Verify decoded AudioBuffer duration.
+- Verify FIFO order with multiple files.
+- Verify failed downloads do not block the queue.
+- Verify Cancel interrupts active fetch.
+- Verify there are no unhandled Promise rejections.
 
 ## M4 - Cancellation & Cleanup
 

@@ -2,7 +2,7 @@
 import "./style.css";
 
 import { AudioTaskQueue } from "./queue/AudioTaskQueue";
-import { mockAudioProcessor } from "./audio/mockAudioProcessor";
+import { realAudioProcessor } from "./audio/realAudioProcessor";
 import type { AudioTask } from "./contracts/audio-contract";
 
 // M2B - Get HTML elements
@@ -24,8 +24,7 @@ const cancelAllButton =
 
 // Create FIFO Queue Controller
 
-const audioQueue = new AudioTaskQueue(mockAudioProcessor);
-
+const audioQueue = new AudioTaskQueue(realAudioProcessor);
 // Create an HTML list item for each audio task
 
 function renderTask(task: AudioTask): HTMLLIElement {
