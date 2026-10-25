@@ -1,0 +1,3 @@
+.directory { border-radius: 20px; background: #16253d; border: 1px solid #39506c; padding: 2rem; }
+.list { display: grid; gap: .8rem; list-style: none; padding: 0; }
+.item { background: #243952; border-radius: 12px; padding: 1rem; }

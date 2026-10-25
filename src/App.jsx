@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import DeveloperCard from './components/DeveloperCard.jsx';
-
+import ScientistDirectory from './components/ScientistDirectory.jsx';
 const ACTIVITIES = [
   { id: 'ex1', label: 'Exercise 1', name: 'Semantic Developer Card' },
   { id: 'ex2', label: 'Exercise 2', name: 'Scientist Directory' },
@@ -23,7 +23,7 @@ export default function App() {
         <section className="exercise-section" aria-labelledby="exercise-heading">
           <header className="exercise-header"><p className="section-kicker">{activity.label.toUpperCase()}</p><h2 id="exercise-heading">{activity.name}</h2></header>
           {activeExercise === 'ex1' && <DeveloperCard />}
-          {activeExercise === 'ex2' && <p>Exercise 2 is coming in checkpoint 4.</p>}
+          {activeExercise === 'ex2' && <ScientistDirectory />}
           {activeExercise === 'ex3' && <p>Exercise 3 is coming in checkpoint 7.</p>}
         </section>
       </main>
