@@ -1,6 +1,33 @@
-.card { padding: 1rem; border: 1px solid #344e68; border-radius: 16px; }
-.header { display: flex; gap: 1rem; align-items: center; }
-.avatar, .avatarFallback { width: 120px; height: 120px; }
-.avatarFallback { display: grid; place-items: center; }
-.metrics { display: grid; grid-template-columns: repeat(3, 1fr); }
-.skills { list-style: none; padding: 0; }
+.card {
+  --card-border: #334966;
+  --card-background: #16253c;
+  --card-accent: #26c7e5;
+  --card-muted: #a6c6da;
+  width: min(100%, 770px);
+  padding: clamp(1rem, 4vw, 2rem);
+  border: 1px solid var(--card-border);
+  border-radius: 24px;
+  background: linear-gradient(135deg, var(--card-background), #101a2c);
+  box-shadow: 0 15px 45px rgba(0, 0, 0, .16);
+}
+.header { display: flex; align-items: center; gap: 1.5rem; padding-bottom: 1.35rem; border-bottom: 1px solid #2d425d; }
+.avatar, .avatarFallback { flex: 0 0 120px; width: 120px; height: 120px; border-radius: 22px; object-fit: cover; border: 2px solid var(--card-accent); }
+.avatarFallback { display: grid; place-items: center; background: #093d57; color: #e5faff; font-size: 2rem; font-weight: 800; }
+.heading { margin: 0; font-size: clamp(1.5rem, 4vw, 2.2rem); line-height: 1.16; }
+.role { margin: .55rem 0 0; color: var(--card-muted); line-height: 1.5; }
+.metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 .75rem; margin: 1.4rem 0; }
+.metrics dt { margin: 0; color: #97b1ca; font-size: .82rem; }
+.metrics dd { margin: .4rem 0 0; font-size: clamp(1.25rem, 3vw, 1.7rem); font-weight: 800; color: #e9f7ff; }
+.skillsSection h3 { margin: 0 0 .9rem; font-size: 1rem; }
+.skills { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .6rem; }
+.skills li { padding: .75rem; border-radius: 12px; background: #1d324e; border: 1px solid #345170; display: flex; justify-content: space-between; gap: .7rem; flex-wrap: wrap; }
+.skills span { color: #77d7ed; font-size: .82rem; }
+@media (max-width: 375px) {
+  .card { padding: 1rem; border-radius: 16px; }
+  .header { flex-direction: column; text-align: center; gap: .8rem; }
+  .avatar, .avatarFallback { flex-basis: 96px; width: 96px; height: 96px; }
+  .metrics { gap: .4rem; }
+  .metrics dt { font-size: .7rem; overflow-wrap: anywhere; }
+  .metrics dd { font-size: 1.1rem; }
+  .skills { grid-template-columns: 1fr; }
+}
