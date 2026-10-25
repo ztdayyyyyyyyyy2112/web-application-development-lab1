@@ -294,3 +294,15 @@ main {
     text-align: center;
   }
 }
+
+/* M3A - Keyboard Navigation */
+
+.data-grid td:focus-visible {
+  outline: 3px solid var(--primary);
+  outline-offset: -3px;
+  background: #dbeafe;
+}
+
+.data-grid td[tabindex="0"] {
+  position: relative;
+}

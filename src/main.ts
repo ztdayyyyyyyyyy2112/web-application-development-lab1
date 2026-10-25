@@ -26,6 +26,9 @@ let searchQuery = "";
 
 let currentPage = 1;
 let pageSize = 5;
+// M3A - Roving tabindex state
+let activeRowIndex = 0;
+let activeColumnIndex = 0;
 
 const pageSizeSelect =
   document.querySelector<HTMLSelectElement>("#page-size");
@@ -214,7 +217,10 @@ function renderRows(): void {
   updatePagination(sortedProducts.length);
 
   const displayedProducts = getPaginatedProducts(sortedProducts);
-
+  activeRowIndex = Math.min(
+  activeRowIndex,
+  Math.max(0, displayedProducts.length - 1)
+);
   if (searchStatus) {
   searchStatus.textContent =
     `${sortedProducts.length} product(s) found.`;
@@ -232,11 +238,22 @@ function renderRows(): void {
     return;
   }
 
-  displayedProducts.forEach((product) => {
+  displayedProducts.forEach((product, rowIndex) => {
     const row = document.createElement("tr");
-
-    gridConfig.columns.forEach((column) => {
+    // M3A - Identify product rows for keyboard navigation
+  row.dataset.productId = product.id;
+    gridConfig.columns.forEach((column, columnIndex) => {
       const cell = document.createElement("td");
+
+      // Keyboard navigation metadata
+cell.dataset.rowIndex = String(rowIndex);
+cell.dataset.columnIndex = String(columnIndex);
+
+cell.tabIndex =
+  rowIndex === activeRowIndex &&
+  columnIndex === activeColumnIndex
+    ? 0
+    : -1;
       const value = product[column.accessorKey];
 
       if (column.accessorKey === "price") {
@@ -265,6 +282,84 @@ function renderRows(): void {
     tbody.appendChild(row);
   });
 }
+
+
+function focusGridCell(rowIndex: number, columnIndex: number): void {
+  const cells = Array.from(
+    tbody.querySelectorAll<HTMLTableCellElement>("td[data-row-index]")
+  );
+
+  const rowCount = tbody.querySelectorAll(
+    "tr[data-product-id]"
+  ).length;
+
+  if (rowCount === 0) return;
+
+  const safeRow = Math.max(0, Math.min(rowIndex, rowCount - 1));
+
+  const safeColumn = Math.max(
+    0,
+    Math.min(columnIndex, gridConfig.columns.length - 1)
+  );
+
+  const target = cells.find(
+    (cell) =>
+      Number(cell.dataset.rowIndex) === safeRow &&
+      Number(cell.dataset.columnIndex) === safeColumn
+  );
+
+  if (!target) return;
+
+  const previous = tbody.querySelector<HTMLTableCellElement>(
+    'td[tabindex="0"]'
+  );
+
+  previous?.setAttribute("tabindex", "-1");
+
+  target.tabIndex = 0;
+  activeRowIndex = safeRow;
+  activeColumnIndex = safeColumn;
+
+  target.focus();
+}
+
+tbody.addEventListener("keydown", (event: KeyboardEvent) => {
+  const target = event.target;
+
+  if (!(target instanceof HTMLTableCellElement)) {
+    return;
+  }
+
+  const row = Number(target.dataset.rowIndex);
+  const column = Number(target.dataset.columnIndex);
+
+  let nextRow = row;
+  let nextColumn = column;
+
+  switch (event.key) {
+    case "ArrowUp":
+      nextRow--;
+      break;
+
+    case "ArrowDown":
+      nextRow++;
+      break;
+
+    case "ArrowLeft":
+      nextColumn--;
+      break;
+
+    case "ArrowRight":
+      nextColumn++;
+      break;
+
+    default:
+      return;
+  }
+
+  event.preventDefault();
+  focusGridCell(nextRow, nextColumn);
+});
 
 function renderGrid(): void {
   renderHeaders();

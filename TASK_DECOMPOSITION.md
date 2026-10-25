@@ -82,6 +82,28 @@ Verification:
 - Space toggles row selection.
 - Maintain visible keyboard focus.
 
+### M3A - Keyboard Navigation
+
+Objective:
+Implement keyboard navigation using roving tabindex.
+
+Contract:
+- ArrowUp moves focus to the previous row.
+- ArrowDown moves focus to the next row.
+- ArrowLeft moves focus to the previous column.
+- ArrowRight moves focus to the next column.
+- Tab enters the grid at one active cell.
+- Only one grid cell has tabindex="0".
+- Other cells have tabindex="-1".
+- Focus must remain within valid grid boundaries.
+- Sorting, filtering and pagination must continue working.
+
+Verification:
+- Tab into the grid.
+- Test all four arrow keys.
+- Verify focus moves between cells.
+- Verify only one cell has tabindex="0".
+
 ## M4 - Accessibility
 - Follow WCAG 2.2 AA.
 - Minimum text contrast ratio 4.5:1.
