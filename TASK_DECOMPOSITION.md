@@ -153,6 +153,40 @@ Verification:
 - Minimum text contrast ratio 4.5:1.
 - Support screen readers.
 - Use correct ARIA grid semantics.
+## M4 - WCAG 2.2 AA Accessibility Audit
+
+### M4A - Contrast & Visual Accessibility
+
+Objective:
+Improve text contrast, focus visibility and visual accessibility.
+
+Contract:
+- Normal text contrast >= 4.5:1.
+- Large text contrast >= 3:1.
+- UI component boundaries >= 3:1 where required.
+- Do not use color as the only status indicator.
+- Focus indicators must be clearly visible.
+- Support reduced-motion preferences.
+
+Verification:
+- Inspect text and background contrast in Chrome DevTools.
+- Verify Active, Low Stock and Out of Stock badges.
+- Test keyboard focus visibility.
+- Verify selected rows are distinguishable.
+- Check layout at 375px.
+
+### M4B - Keyboard & Focus Audit
+- Verify Tab and Shift+Tab navigation.
+- Verify no keyboard traps.
+- Test focus after filtering and pagination.
+- Test Enter and Space selection.
+
+### M4C - Screen Reader & Lighthouse
+- Verify accessible names and roles.
+- Verify grid selection announcements.
+- Test with NVDA.
+- Run Lighthouse Accessibility audit.
+- Document and correct findings.
 
 ## M5 - Performance & Quality
 - Target Lighthouse Accessibility = 100.
