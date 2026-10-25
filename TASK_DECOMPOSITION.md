@@ -251,30 +251,7 @@ Verification:
 - Stop cancels animation.
 - No duplicate animation loops.
 - Canvas remains sharp on high-DPI displays.
-### M5C - Rendering Performance Optimization
 
-Objective:
-Optimize Canvas visualization for smooth and resource-efficient rendering.
-
-Contract:
-- Cap rendering at approximately 60 FPS.
-- Use requestAnimationFrame.
-- Prevent duplicate animation loops.
-- Avoid unnecessary allocations per frame.
-- Support devicePixelRatio scaling.
-- Resize canvas with ResizeObserver.
-- Pause rendering when the tab is hidden.
-- Resume rendering when the tab becomes visible.
-- Disconnect observers and cancel animation during cleanup.
-
-Verification:
-- Animation responds to audio frequency changes.
-- FPS remains near the target on capable devices.
-- No duplicate animation loops.
-- Canvas resizes correctly.
-- Canvas remains sharp on HiDPI screens.
-- Rendering pauses in background tabs.
-- Cleanup releases animation resources.
 
 ## M6 - Verification
 
@@ -294,6 +271,34 @@ Trong `src`, tạo folder:
 src/
 └── contracts/
     └── audio-contract.ts
+    ### M6A - Automated Testing
+
+Objective:
+Verify FIFO queue correctness, cancellation behavior,
+error recovery, and audio visualizer lifecycle.
+
+Test Framework:
+- Vitest
+- TypeScript
+
+Test Plan:
+- T01: FIFO task processing order
+- T02: Concurrent enqueue without overlapping processing
+- T03: Cancel pending task
+- T04: Cancel active task
+- T05: Cancel all tasks
+- T06: Recover after processor failure
+- T07: Playback race condition prevention
+- T08: Visualizer animation cleanup
+
+Acceptance Criteria:
+- Tests exercise actual application components.
+- FIFO order is preserved.
+- Cancelled tasks do not produce successful results.
+- Failed tasks do not block subsequent tasks.
+- No unhandled Promise rejections.
+- All automated tests pass.
+- Production build succeeds.
 ```
 
 Dán nội dung:
