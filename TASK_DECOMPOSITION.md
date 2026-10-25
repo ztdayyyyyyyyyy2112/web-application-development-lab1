@@ -197,12 +197,30 @@ Verification:
 - Test Arrow Keys at grid boundaries.
 - Verify keyboard users can exit the grid.
 
-### M4C - Screen Reader & Lighthouse
-- Verify accessible names and roles.
-- Verify grid selection announcements.
-- Test with NVDA.
-- Run Lighthouse Accessibility audit.
-- Document and correct findings.
+### M4C - Screen Reader & Lighthouse Accessibility Audit
+
+Objective:
+Verify accessible behavior of the enterprise data-grid
+using browser accessibility tools and NVDA.
+
+Contract:
+- Grid has a valid accessible name.
+- Rows and cells expose correct semantics.
+- Sorted columns expose aria-sort.
+- Selected rows expose aria-selected.
+- Keyboard navigation works with screen readers.
+- Dynamic announcements are understandable.
+- No keyboard traps or invalid focus states.
+- Target Lighthouse Accessibility score: 100.
+
+Verification:
+1. Inspect ARIA attributes in DevTools.
+2. Test NVDA with Chrome.
+3. Test sorting and row selection announcements.
+4. Test filtering and pagination.
+5. Run Lighthouse Accessibility audit.
+6. Document defects and fixes.
+7. Re-run all tests after fixes.
 
 ## M5 - Performance & Quality
 - Target Lighthouse Accessibility = 100.
