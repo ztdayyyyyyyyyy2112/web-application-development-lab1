@@ -49,7 +49,20 @@ const readyTracks: ReadyTrack[] = [];
 
 let selectedTrackId: string | null = null;
 let isPlaying = false;
+let playbackRequestId = 0;
+let isStartingPlayback = false;
 
+function updatePlaybackButtons(): void {
+  if (playButton) {
+    playButton.disabled =
+      selectedTrackId === null;
+  }
+
+  if (stopButton) {
+    stopButton.disabled =
+      !isPlaying && !isStartingPlayback;
+  }
+}
 // Ready Track List
 
 const readySection = document.createElement("section");
@@ -109,18 +122,7 @@ function renderReadyTracks(): void {
   });
 }
 
-// Update Buttons
 
-function updatePlaybackButtons(): void {
-  if (playButton) {
-    playButton.disabled =
-      selectedTrackId === null;
-  }
-
-  if (stopButton) {
-    stopButton.disabled = !isPlaying;
-  }
-}
 
 // Render Queue Task
 
@@ -230,6 +232,8 @@ audioForm?.addEventListener("submit", (event) => {
 
 // Play Selected Track
 
+// M4A - Race-safe Play
+
 playButton?.addEventListener("click", async () => {
   const track = readyTracks.find(
     (item) => item.id === selectedTrackId
@@ -237,63 +241,70 @@ playButton?.addEventListener("click", async () => {
 
   if (!track) return;
 
+  // Identify this UI playback request
+  const currentRequest = ++playbackRequestId;
+  isStartingPlayback = true;
+updatePlaybackButtons();
+
   try {
-    await playbackEngine.play(track.buffer, () => {
-      isPlaying = false;
-      updatePlaybackButtons();
-    });
+    const started = await playbackEngine.play(
+      track.buffer,
+      () => {
+        if (currentRequest !== playbackRequestId) return;
+
+        isPlaying = false;
+        updatePlaybackButtons();
+
+        console.log("Playback finished:", track.url);
+      }
+    );
+
+    // Ignore outdated UI updates
+    if (currentRequest !== playbackRequestId) {
+      return;
+    }
+
+    if (!started) {
+      return;
+    }
 
     isPlaying = true;
     updatePlaybackButtons();
 
     console.log("Playing:", track.url);
-        // M3C - Verify FFT Analyser
+
     console.log(
       "FFT Bin Count:",
       playbackEngine.getFrequencyBinCount()
     );
 
-    console.log(
-      "Analyser initialized:",
-      playbackEngine.hasAnalyser()
-    );
-
-    const frequencyData = playbackEngine.getFrequencyData();
-
-    if (frequencyData) {
-      console.log(
-        "Frequency Data:",
-        Array.from(frequencyData.slice(0, 20))
-      );
+    } catch (error) {
+    if (currentRequest !== playbackRequestId) {
+      return;
     }
-        // Temporary FFT debugging
-    let sampleCount = 0;
 
-    const fftInterval = window.setInterval(() => {
-      const data = playbackEngine.getFrequencyData();
-
-      if (!data) return;
-
-      const maxValue = Math.max(...data);
-
-      console.log("FFT Max Amplitude:", maxValue);
-
-      sampleCount++;
-
-      if (sampleCount >= 10) {
-        window.clearInterval(fftInterval);
-      }
-    }, 500);
-  } catch (error) {
     isPlaying = false;
     updatePlaybackButtons();
+
     console.error("Playback failed:", error);
+
+  } finally {
+    if (currentRequest === playbackRequestId) {
+      isStartingPlayback = false;
+      updatePlaybackButtons();
+    }
   }
 });
 
 // Stop Playback
 
+// M4A - Race-safe Stop
+
 stopButton?.addEventListener("click", () => {
+
+  // Invalidate previous UI playback requests
+  playbackRequestId++;
+  isStartingPlayback = false;
   playbackEngine.stop();
 
   isPlaying = false;

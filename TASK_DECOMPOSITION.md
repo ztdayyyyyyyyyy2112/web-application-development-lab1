@@ -159,7 +159,26 @@ Verification:
 - Cancel pending and active tasks.
 - Disconnect obsolete audio nodes.
 - Avoid resource leaks.
+### M4A - Playback Race Condition Prevention
 
+Objective:
+Prevent stale asynchronous playback requests from starting audio.
+
+Contract:
+- Only the latest playback request may start audio.
+- Stop invalidates pending playback requests.
+- Switching tracks stops the previous source.
+- Repeated Play/Stop must not create overlapping sources.
+- Stale callbacks must not modify current playback state.
+- Preserve FFT analyser functionality.
+
+Verification:
+- Rapidly click Play and Stop.
+- Switch between two tracks.
+- Verify only one track plays at a time.
+- Verify Stop prevents pending playback from starting.
+- Verify FFT still returns 256 frequency bins.
+- Verify no uncaught JavaScript errors.
 ## M5 - Visualizer
 
 - Render FFT frequency data using Canvas.

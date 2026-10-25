@@ -9,18 +9,17 @@
 
   private onEndedCallback: (() => void) | null = null;
 
-  // Initialize AudioContext and FFT analyser
+  // M4A - Track the latest playback request
+  private requestId = 0;
+
   private initialize(): void {
     if (!this.context || this.context.state === "closed") {
       this.context = new AudioContext();
 
       this.analyser = this.context.createAnalyser();
 
-      // FFT 512 -> 256 frequency bins
       this.analyser.fftSize = 512;
-
       this.analyser.smoothingTimeConstant = 0.8;
-
       this.analyser.minDecibels = -90;
       this.analyser.maxDecibels = -10;
 
@@ -32,12 +31,16 @@
     }
   }
 
-  // Play decoded AudioBuffer
   async play(
     buffer: AudioBuffer,
     onEnded?: () => void
-  ): Promise<void> {
+  ): Promise<boolean> {
+
+    // Stop previous playback and invalidate old requests
     this.stop();
+
+    // Capture the current request
+    const currentRequest = this.requestId;
 
     this.initialize();
 
@@ -45,15 +48,24 @@
       throw new Error("Audio engine initialization failed");
     }
 
-    await this.context.resume();
+    const context = this.context;
+    const analyser = this.analyser;
 
-    const source = this.context.createBufferSource();
+    await context.resume();
+
+    // M4A - Ignore outdated playback requests
+    if (
+      currentRequest !== this.requestId ||
+      context.state === "closed"
+    ) {
+      console.log("Stale playback request ignored");
+      return false;
+    }
+
+    const source = context.createBufferSource();
 
     source.buffer = buffer;
-
-    // Audio graph:
-    // Source -> Analyser -> Speakers
-    source.connect(this.analyser);
+    source.connect(analyser);
 
     this.source = source;
     this.onEndedCallback = onEnded ?? null;
@@ -71,9 +83,10 @@
     };
 
     source.start(0);
+
+    return true;
   }
 
-  // Return frequency data (0-255)
   getFrequencyData(): Uint8Array<ArrayBuffer> | null {
     if (!this.analyser || !this.frequencyData) {
       return null;
@@ -84,18 +97,19 @@
     return this.frequencyData;
   }
 
-  // Return number of FFT bins
   getFrequencyBinCount(): number {
     return this.analyser?.frequencyBinCount ?? 0;
   }
 
-  // Check whether analyser is initialized
   hasAnalyser(): boolean {
     return this.analyser !== null;
   }
 
-  // Stop playback
   stop(): void {
+
+    // Invalidate all previous playback requests
+    this.requestId++;
+
     if (!this.source) return;
 
     const source = this.source;
@@ -104,11 +118,16 @@
     this.onEndedCallback = null;
 
     source.onended = null;
-    source.stop();
+
+    try {
+      source.stop();
+    } catch (error) {
+      console.warn("Audio source already stopped:", error);
+    }
+
     source.disconnect();
   }
 
-  // Release resources
   async cleanup(): Promise<void> {
     this.stop();
 
@@ -117,11 +136,13 @@
       this.analyser = null;
     }
 
-    if (this.context && this.context.state !== "closed") {
-      await this.context.close();
-    }
+    const context = this.context;
 
     this.context = null;
     this.frequencyData = null;
+
+    if (context && context.state !== "closed") {
+      await context.close();
+    }
   }
 }
