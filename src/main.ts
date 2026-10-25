@@ -209,21 +209,27 @@ audioForm?.addEventListener("submit", (event) => {
       console.log("Audio ready:", url);
     },
     (error: unknown) => {
-      if (
-        error instanceof DOMException &&
-        error.name === "AbortError"
-      ) {
-        console.log("Task cancelled:", id);
-        return;
-      }
+  const isCancelled =
+    error instanceof DOMException &&
+    error.name === "AbortError";
 
-      console.error("Audio task failed:", error);
+  if (isCancelled) {
+    console.log("Task cancelled:", id);
+    return;
+  }
 
-      if (queueStatus) {
-        queueStatus.textContent =
-          `Failed to load: ${url}`;
-      }
-    }
+  console.error("Audio task failed:", error);
+
+  const message =
+    error instanceof Error
+      ? error.message
+      : "Unknown audio processing error";
+
+  if (queueStatus) {
+    queueStatus.textContent =
+      `Failed to load ${url}: ${message}`;
+  }
+}
   );
 
   audioUrlInput.value = "";

@@ -179,6 +179,28 @@ Verification:
 - Verify Stop prevents pending playback from starting.
 - Verify FFT still returns 256 frequency bins.
 - Verify no uncaught JavaScript errors.
+### M4B - Cancellation & Async Error Handling
+
+Objective:
+Ensure safe cancellation and error recovery in the FIFO audio queue.
+
+Contract:
+- Cancel pending tasks without processing them.
+- Abort active downloads using AbortController.
+- Ignore decoded results from cancelled tasks.
+- Continue processing subsequent tasks after failures.
+- Handle HTTP errors and invalid audio files.
+- Avoid unhandled Promise rejections.
+- Preserve FIFO processing order.
+
+Verification:
+- Cancel a pending task.
+- Cancel an active download.
+- Cancel all queued tasks.
+- Load a nonexistent audio file.
+- Load an invalid audio file.
+- Verify subsequent valid tasks still complete.
+- Verify cancelled tracks never appear in Ready to Play.
 ## M5 - Visualizer
 
 - Render FFT frequency data using Canvas.
